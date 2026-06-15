@@ -19,8 +19,12 @@ confidentiality requirements and is **not** included.
 | `crowdfunding_country_level_2015_2020.dta` | Country-level digital financing activity, 2015–2020: debt- and equity-based crowdfunding volumes (USD) and platform counts by investor type (retail / institutional) and origin (domestic / foreign / total), with GDP-scaled and log-transformed versions, market-concentration (HHI) measures, and regional/peer-country aggregates. |
 | `regindex_country_level_2015_2020.dta`     | The **regulatory clarity index** constructed by the authors, for debt-based (P2P) and equity-based (ECF) crowdfunding — including adjusted, demand-/supply-side, stringency, switcher, and peer-country variants, plus the year each country first introduced regulation.                                                              |
 
-A complete variable dictionary for every dataset is in **`readme.pdf`** (also
-`readme.docx`).
+Per-dataset variable dictionaries (markdown):
+
+- [`codebook_crowdfunding_country_level.md`](codebook_crowdfunding_country_level.md)
+- [`codebook_regindex_country_level.md`](codebook_regindex_country_level.md)
+
+The complete dictionary for every dataset (including the externally-sourced controls) is also in **`readme.pdf`** / **`readme.docx`**.
 
 ## Code
 
