@@ -1,5 +1,7 @@
 # Global Crowdfunding & Regulatory Clarity Dataset (2015–2020)
 
+_Annual, country-level debt- and equity-based crowdfunding activity worldwide from 2015 to 2020, together with a constructed index of how clearly each country regulates crowdfunding._
+
 Replication data and code for:
 
 > **Ran, Z., Rau, P. R., & Ziegler, T. (2025).** "Sometimes, Always, Never: Regulatory
