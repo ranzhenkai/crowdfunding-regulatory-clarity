@@ -1,0 +1,2442 @@
+-----------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replic
+> ation_package\platform_level_regression.log
+  log type:  text
+ opened on:  17 Nov 2024, 09:59:05
+
+. do "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_p
+> ackage\ms_code_submission_regression_tables_platform_level.do"
+
+. *This do file aims to provide a set of main regression tables included in the man
+> uscript
+. *Only tables based on platform-level data are described in this code:
+. *Table 8 and Table 11 Panel C Part II
+. *Other tables are based on country-level data, and are described in another code 
+. 
+. //merge with control variables, so that the final data is ready for generating al
+> l platform-level regressions
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_p
+> ackage"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. use crowdfunding_platform_level_2015_2020, clear
+
+. 
+. merge m:1 recipient_country year using regindex_country_level_2015_2020
+(variable Recipient_country was int, now long to accommodate using data's values)
+(variable year was int, now double to accommodate using data's values)
+(label Recipient_country already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           228
+        from master                         0  (_merge==1)
+        from using                        228  (_merge==2)
+
+    Matched                            10,636  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge == 2
+(228 observations deleted)
+
+. drop _merge 
+
+. 
+. merge m:1 recipient_country year using control_variables
+(variable recipient_country was str32, now str52 to accommodate using data's
+       values)
+(label Recipient_country already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           430
+        from master                         0  (_merge==1)
+        from using                        430  (_merge==2)
+
+    Matched                            10,636  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge == 2
+(430 observations deleted)
+
+. drop _merge 
+
+. 
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_p
+> ackage"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. save platform_panel_data_final, replace 
+file platform_panel_data_final.dta saved
+
+. 
+. 
+. *****************All Main Tables************************
+. ********************************************************
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_p
+> ackage"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. use country_panel_data_final,clear
+
+. 
+. bys Recipient_country (year): egen switcher_P2P_RegIndex = mean(P2P_RegIndex_pub_
+> L_recip)  if Switcher_P2P_recip == 1 & year >= P2P_year_recip + 1 & year >= 2015 
+> & year <= 2020 & P2P_year_recip!= 0
+(1,117 missing values generated)
+
+. 
+. bys Recipient_country (year): egen switcher_P2P_RegIndex_Adj = mean(P2P_RegIndex_
+> Adj_pub_L_recip)  if Switcher_P2P_recip == 1 & year >= P2P_year_recip + 1 & year 
+> >= 2015 & year <= 2020 & P2P_year_recip!= 0
+(1,117 missing values generated)
+
+. 
+. bys Recipient_country (year): replace switcher_P2P_RegIndex = . if year != P2P_ye
+> ar_recip + 1
+(66 real changes made, 66 to missing)
+
+. 
+. bys Recipient_country (year): replace switcher_P2P_RegIndex_Adj =. if year != P2P
+> _year_recip + 1
+(66 real changes made, 66 to missing)
+
+. 
+. bys Recipient_country (year): egen always_P2P_RegIndex_after = mean(P2P_RegIndex_
+> pub_L_recip)  if Switcher_P2P_recip == 0 & year >= P2P_year_recip + 1 & year >= 2
+> 016 & year <= 2020 & P2P_year_recip!= 0
+(1,172 missing values generated)
+
+. 
+. bys Recipient_country (year): egen always_P2P_RegIndex_Adj_after = mean(P2P_RegIn
+> dex_Adj_pub_L_recip)  if Switcher_P2P_recip == 0 & year >= P2P_year_recip + 1 & y
+> ear >= 2016 & year <= 2020 & P2P_year_recip!=0
+(1,172 missing values generated)
+
+. 
+. bys Recipient_country (always_P2P_RegIndex_after): replace always_P2P_RegIndex_af
+> ter = always_P2P_RegIndex_after[1]
+(8 real changes made)
+
+. 
+. bys Recipient_country (always_P2P_RegIndex_Adj_after): replace always_P2P_RegInde
+> x_Adj_after = always_P2P_RegIndex_Adj_after[1]
+(8 real changes made)
+
+. 
+. bys Recipient_country (year): egen always_P2P_RegIndex_before = mean(P2P_RegIndex
+> _pub_L_recip)  if Switcher_P2P_recip == 0 & year >= P2P_year_recip + 1 & year <= 
+> 2015 & P2P_year_recip!= 0
+(1,204 missing values generated)
+
+. 
+. bys Recipient_country (year): egen always_P2P_RegIndex_Adj_before = mean(P2P_RegI
+> ndex_Adj_pub_L_recip)  if Switcher_P2P_recip == 0 & year >= P2P_year_recip + 1 & 
+>  year <= 2015 & P2P_year_recip!=0
+(1,204 missing values generated)
+
+. 
+. 
+. bys Recipient_country (always_P2P_RegIndex_before): replace always_P2P_RegIndex_b
+> efore = always_P2P_RegIndex_before[1]
+(40 real changes made)
+
+. 
+. bys Recipient_country (always_P2P_RegIndex_Adj_before): replace always_P2P_RegInd
+> ex_Adj_before = always_P2P_RegIndex_Adj_before[1]
+(40 real changes made)
+
+. 
+. 
+. bys Recipient_country (year): gen always_P2P_RegIndex = always_P2P_RegIndex_after
+>  - always_P2P_RegIndex_before
+(1,164 missing values generated)
+
+. 
+. bys Recipient_country (year): gen always_P2P_RegIndex_Adj = always_P2P_RegIndex_A
+> dj_after - always_P2P_RegIndex_Adj_before
+(1,164 missing values generated)
+
+. 
+. bys Recipient_country (year): replace always_P2P_RegIndex = . if year != 2015
+(40 real changes made, 40 to missing)
+
+. 
+. bys Recipient_country (year): replace always_P2P_RegIndex_Adj =. if year != 2015
+(40 real changes made, 40 to missing)
+
+. 
+. sum switcher_P2P_RegIndex 
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+switcher_P~x |         29    21.48966    8.464816          6         43
+
+. local switcher_P2P_RegIndex = r(mean)
+
+. 
+. sum switcher_P2P_RegIndex_Adj
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+switcher_P~j |         29    5.926743    2.317778   2.166667   10.13889
+
+. local switcher_P2P_RegIndex_Adj = r(mean)
+
+. 
+. sum always_P2P_RegIndex
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+always_P2P~x |          8       17.45    13.20465          0         27
+
+. local always_P2P_RegIndex = r(mean)
+
+. 
+. sum always_P2P_RegIndex_Adj
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+always_P2P~j |          8    4.825556    3.635932          0   7.455555
+
+. local always_P2P_RegIndex_Adj = r(mean)
+
+.  
+. sum always_P2P_RegIndex_after
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+alwa~x_after |         48       29.45    10.06874         14         37
+
+. local always_P2P_RegIndex_after = r(mean)
+
+. 
+. sum always_P2P_RegIndex_Adj_after
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+alwa~j_after |         48    7.785972    2.245952   4.194445   9.461111
+
+. local always_P2P_RegIndex_Adj_after = r(mean)
+
+. 
+. 
+. ***************************************************
+. ***************Regression Analysis*****************
+. ***************************************************
+. 
+. ***************************************************
+. *Table 8*******************************************
+. ***************************************************
+. ***************************************************
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_p
+> ackage"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. use platform_panel_data_final,clear
+
+. 
+. reghdfe lntotal_adfin_dom P2P_RegIndex_pub_L_recip Switcher_P2P_recip P2P_RegInde
+> x_Switcher_recip /// 
+>                 RL_EST_L_recip /// 
+>                  lngdp_L_recip /// 
+>                                  if year >= 2015 , a(i.Recipient_country i.year) 
+> vce(cluster i.Recipient_country##i.year) 
+(dropped 7 singleton observations)
+note: Switcher_P2P_recip is probably collinear with the fixed effects (all partiall
+> ed-out values are close to zero; tol = 1.0e-09)
+(MWFE estimator converged in 6 iterations)
+note: Switcher_P2P_recip omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      6,023
+Absorbing 2 HDFE groups                           F(   4,    443) =       0.74
+Statistics robust to heteroskedasticity           Prob > F        =     0.5621
+                                                  R-squared       =     0.4481
+                                                  Adj R-squared   =     0.4391
+                                                  Within R-sq.    =     0.0012
+Number of clusters (Recipient_country##year) =        444Root MSE =     3.1267
+
+                  (Std. err. adjusted for 444 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lntotal_adfin_~m | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+P2~x_pub_L_recip |  -.0013381   .0176544    -0.08   0.940    -.0360349    .0333587
+Switcher_P2P_r~p |          0  (omitted)
+P2P_RegIndex_S~p |   .0025093   .0122122     0.21   0.837    -.0214918    .0265105
+  RL_EST_L_recip |   .1190173    .972905     0.12   0.903    -1.793065      2.0311
+   lngdp_L_recip |   -2.11097   2.460123    -0.86   0.391    -6.945932    2.723991
+           _cons |   65.34631   70.49251     0.93   0.354    -73.19497    203.8876
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        89           0          89     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. 
+. local m1 = round((_b[P2P_RegIndex_pub_L_recip] + _b[P2P_RegIndex_Switcher_recip])
+> *`switcher_P2P_RegIndex',0.001)
+
+. local m2 = round(_b[P2P_RegIndex_pub_L_recip]*`always_P2P_RegIndex',0.001)
+
+. local m3 = round(_b[P2P_RegIndex_pub_L_recip]*(`switcher_P2P_RegIndex' - `always_
+> P2P_RegIndex') + _b[P2P_RegIndex_Switcher_recip]*`switcher_P2P_RegIndex',0.001)
+
+. 
+. test (P2P_RegIndex_pub_L_recip + P2P_RegIndex_Switcher_recip)*`switcher_P2P_RegIn
+> dex' = 0
+
+ ( 1)  21.48966*P2P_RegIndex_pub_L_recip + 21.48966*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   443) =    0.02
+            Prob > F =    0.9026
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test  P2P_RegIndex_pub_L_recip*`always_P2P_RegIndex' = 0
+
+ ( 1)  17.45*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,   443) =    0.01
+            Prob > F =    0.9396
+
+. local p2 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test P2P_RegIndex_pub_L_recip*(`switcher_P2P_RegIndex' - `always_P2P_RegIndex') +
+>  P2P_RegIndex_Switcher_recip*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  4.039655*P2P_RegIndex_pub_L_recip + 21.48966*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   443) =    0.06
+            Prob > F =    0.8127
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. est save t8Am1,replace
+file t8Am1.ster saved
+
+. indeplist
+Independent variables: P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip RL_EST_
+> L_recip lngdp_L_recip
+
+. outreg2 t8Am1 using regression_submission_platform_level_Table8A, replace  st(coe
+> f tstat) auto(3) nonotes dta  title("Table 8: Impact of Regulation on Platform-Le
+> vel Domestic and Forgein Debt Crowdfunding Volume. This table reports DiD tests t
+> o examine how platform-level domestic debt crowdfunding volume is impacted by cha
+> nges in regulation. The dependent variable is the log of debt crowdfunding volume
+>  per domestic and foreign platform scaled by GDP per capita by country. The indep
+> endent variables, Regulation index and Adjusted Regulation Index, are, respective
+> ly, the raw and normalised measures of the regulatory clarity in the country usin
+> g indicator variables for different regulation provisions. The independent variab
+> le, Switcher, is 1 if the country introduces its first regulation between 2015-20
+> 20, and 0 otherwise. All independent variables are described in the Appendix and 
+> are lagged by a year. All data is aggregated by platform and year separately from
+>  the 2015-2020 global surveys of crowdfunding. Heteroscedasticity-consistent robu
+> st standard errors are clustered by country and year, following Thompson (2011). 
+> T-statistics are reported in parentheses. *** p<0.01, ** p<0.05, * p<0.1") addtex
+> t("Recipient country FE & Year FE", "Yes","Average Effect of Introducing Regulati
+> on: Measure 1",`m1',"p-value (of Measure 1)","(`p1')","Average Effect of Introduc
+> ing Regulation: Measure 2",`m2',"p-value (of Measure 2)","(`p2')","Average Effect
+>  of Introducing Regulation: Measure 3",`m3',"p-value (of Measure 3)","(`p3')") ad
+> jr2  sortvar(P2P_Binary_pub_L_recip P2P_Binary_Switcher_recip P2P_RegIndex_pub_L_
+> recip P2P_RegIndex_Switcher_recip P2P_RegIndex_Adj_pub_L_recip P2P_RegIndex_Adj_S
+> witcher_recip Switcher_P2P_recip    )  label keep(`r(X)') ctitle("Raw-Domestic")
+dir : seeout
+
+. 
+. 
+. reghdfe lntotal_adfin_dom P2P_RegIndex_pub_L_recip Switcher_P2P_recip P2P_RegInde
+> x_Switcher_recip /// 
+>                 RL_EST_L_recip /// 
+>                                 ///
+>                  lngdp_L_recip /// 
+>                  Time_startup_L_recip Cost_startup_L_recip Tax_income_pct_L_recip
+>  ///
+>                                 GC_LegalRights_L_recip ///
+>                                 GC_CreditInfo_L_recip ///
+>                                 RI_L_recip  ///
+>                 Bank_C2A_L_recip ///
+>                 DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip /// 
+>                 Bank_NPL_L_recip /// 
+>                 /// 
+>                 lnMobilePhoneUsage_L_recip ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year) 
+(dropped 3 singleton observations)
+note: Switcher_P2P_recip is probably collinear with the fixed effects (all partiall
+> ed-out values are close to zero; tol = 1.0e-09)
+(MWFE estimator converged in 6 iterations)
+note: Switcher_P2P_recip omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      5,062
+Absorbing 2 HDFE groups                           F(  15,    312) =       1.83
+Statistics robust to heteroskedasticity           Prob > F        =     0.0302
+                                                  R-squared       =     0.4654
+                                                  Adj R-squared   =     0.4563
+                                                  Within R-sq.    =     0.0188
+Number of clusters (Recipient_country##year) =        313Root MSE =     3.0920
+
+                  (Std. err. adjusted for 313 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lntotal_adfin_~m | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+P2~x_pub_L_recip |   .0141682   .0214422     0.66   0.509    -.0280214    .0563578
+Switcher_P2P_r~p |          0  (omitted)
+P2P_RegIndex_S~p |   .0029831   .0126108     0.24   0.813    -.0218298     .027796
+  RL_EST_L_recip |   4.734668   2.031891     2.33   0.020     .7367257    8.732609
+   lngdp_L_recip |  -2.102408   2.269953    -0.93   0.355     -6.56876    2.363944
+Time_startup_L~p |   .0182851   .0232696     0.79   0.433    -.0275002    .0640704
+Cost_startup_L~p |  -.0716634   .0460736    -1.56   0.121    -.1623176    .0189908
+Tax_income_pct~p |   .0764897   .0529728     1.44   0.150    -.0277394    .1807188
+GC_LegalRights~p |   .0329056    .012301     2.68   0.008     .0087022     .057109
+GC_CreditInfo_~p |  -.0080006   .0085703    -0.93   0.351    -.0248634    .0088622
+      RI_L_recip |   .0144422   .0226061     0.64   0.523    -.0300374    .0589219
+Bank_C2A_L_recip |   .1905347    .131592     1.45   0.149    -.0683853    .4494547
+DomCredit_by_b~p |  -.0370779   .0342187    -1.08   0.279    -.1044064    .0302506
+lnBankBranch_p~p |  -1.093348   1.360604    -0.80   0.422    -3.770467     1.58377
+Bank_NPL_L_recip |   .0643827   .0620603     1.04   0.300    -.0577269    .1864922
+lnMobilePhoneU~p |   -6.27685   3.597105    -1.74   0.082     -13.3545    .8008003
+           _cons |   94.83799   79.65034     1.19   0.235    -61.88174    251.5577
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        65           0          65     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. local m1 = round((_b[P2P_RegIndex_pub_L_recip] + _b[P2P_RegIndex_Switcher_recip])
+> *`switcher_P2P_RegIndex',0.001)
+
+. local m2 = round(_b[P2P_RegIndex_pub_L_recip]*`always_P2P_RegIndex',0.001)
+
+. local m3 = round(_b[P2P_RegIndex_pub_L_recip]*(`switcher_P2P_RegIndex' - `always_
+> P2P_RegIndex') + _b[P2P_RegIndex_Switcher_recip]*`switcher_P2P_RegIndex',0.001)
+
+. 
+. test (P2P_RegIndex_pub_L_recip + P2P_RegIndex_Switcher_recip)*`switcher_P2P_RegIn
+> dex' = 0
+
+ ( 1)  21.48966*P2P_RegIndex_pub_L_recip + 21.48966*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   312) =    0.62
+            Prob > F =    0.4322
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test  P2P_RegIndex_pub_L_recip*`always_P2P_RegIndex' = 0
+
+ ( 1)  17.45*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,   312) =    0.44
+            Prob > F =    0.5093
+
+. local p2 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test P2P_RegIndex_pub_L_recip*(`switcher_P2P_RegIndex' - `always_P2P_RegIndex') +
+>  P2P_RegIndex_Switcher_recip*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  4.039655*P2P_RegIndex_pub_L_recip + 21.48966*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   312) =    0.21
+            Prob > F =    0.6433
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+.                                 
+. est save t8Am2,replace
+file t8Am2.ster saved
+
+. indeplist
+Independent variables: P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip RL_EST_
+> L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_income_pct_L_
+> recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2A_L_recip Do
+> mCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_recip lnMobilePh
+> oneUsage_L_recip
+
+. outreg2 t8Am2 using regression_submission_platform_level_Table8A, append  st(coef
+>  tstat) auto(3) nonotes dta   addtext("Recipient country FE & Year FE", "Yes","Av
+> erage Effect of Introducing Regulation: Measure 1",`m1',"p-value (of Measure 1)",
+> "(`p1')","Average Effect of Introducing Regulation: Measure 2",`m2',"p-value (of 
+> Measure 2)","(`p2')","Average Effect of Introducing Regulation: Measure 3",`m3',"
+> p-value (of Measure 3)","(`p3')") adjr2  sortvar(P2P_Binary_pub_L_recip P2P_Binar
+> y_Switcher_recip P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip P2P_RegInde
+> x_Adj_pub_L_recip P2P_RegIndex_Adj_Switcher_recip Switcher_P2P_recip    )  label 
+> keep(`r(X)') ctitle("Raw-Domestic")
+dir : seeout
+
+. 
+. 
+. reghdfe lntotal_adfin_in P2P_RegIndex_pub_L_recip Switcher_P2P_recip P2P_RegIndex
+> _Switcher_recip /// 
+>                 RL_EST_L_recip /// 
+>                  lngdp_L_recip /// 
+>                                  if year >= 2015 , a(i.Recipient_country i.year) 
+> vce(cluster i.Recipient_country##i.year) 
+(dropped 4 singleton observations)
+note: Switcher_P2P_recip is probably collinear with the fixed effects (all partiall
+> ed-out values are close to zero; tol = 1.0e-09)
+(MWFE estimator converged in 6 iterations)
+note: Switcher_P2P_recip omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      4,480
+Absorbing 2 HDFE groups                           F(   4,    917) =       1.20
+Statistics robust to heteroskedasticity           Prob > F        =     0.3078
+                                                  R-squared       =     0.1211
+                                                  Adj R-squared   =     0.0830
+                                                  Within R-sq.    =     0.0005
+Number of clusters (Recipient_country##year) =        918Root MSE =     2.4880
+
+                  (Std. err. adjusted for 918 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lntotal_adfin_in | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+P2~x_pub_L_recip |  -.0090954   .0144485    -0.63   0.529    -.0374512    .0192605
+Switcher_P2P_r~p |          0  (omitted)
+P2P_RegIndex_S~p |     .00935   .0156426     0.60   0.550    -.0213494    .0400495
+  RL_EST_L_recip |   .4614764   .3855231     1.20   0.232    -.2951337    1.218087
+   lngdp_L_recip |   .6949953   .3872722     1.79   0.073    -.0650475    1.455038
+           _cons |  -17.00117   10.04763    -1.69   0.091     -36.7202     2.71786
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |       178           0         178     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. 
+. local m1 = round((_b[P2P_RegIndex_pub_L_recip] + _b[P2P_RegIndex_Switcher_recip])
+> *`switcher_P2P_RegIndex',0.001)
+
+. local m2 = round(_b[P2P_RegIndex_pub_L_recip]*`always_P2P_RegIndex',0.001)
+
+. local m3 = round(_b[P2P_RegIndex_pub_L_recip]*(`switcher_P2P_RegIndex' - `always_
+> P2P_RegIndex') + _b[P2P_RegIndex_Switcher_recip]*`switcher_P2P_RegIndex',0.001)
+
+. 
+. test (P2P_RegIndex_pub_L_recip + P2P_RegIndex_Switcher_recip)*`switcher_P2P_RegIn
+> dex' = 0
+
+ ( 1)  21.48966*P2P_RegIndex_pub_L_recip + 21.48966*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   917) =    0.00
+            Prob > F =    0.9680
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test  P2P_RegIndex_pub_L_recip*`always_P2P_RegIndex' = 0
+
+ ( 1)  17.45*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,   917) =    0.40
+            Prob > F =    0.5292
+
+. local p2 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test P2P_RegIndex_pub_L_recip*(`switcher_P2P_RegIndex' - `always_P2P_RegIndex') +
+>  P2P_RegIndex_Switcher_recip*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  4.039655*P2P_RegIndex_pub_L_recip + 21.48966*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   917) =    0.33
+            Prob > F =    0.5630
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. est save t8Am3,replace
+file t8Am3.ster saved
+
+. indeplist
+Independent variables: P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip RL_EST_
+> L_recip lngdp_L_recip
+
+. outreg2 t8Am3 using regression_submission_platform_level_Table8A, append  st(coef
+>  tstat) auto(3) nonotes dta   addtext("Recipient country FE & Year FE", "Yes","Av
+> erage Effect of Introducing Regulation: Measure 1",`m1',"p-value (of Measure 1)",
+> "(`p1')","Average Effect of Introducing Regulation: Measure 2",`m2',"p-value (of 
+> Measure 2)","(`p2')","Average Effect of Introducing Regulation: Measure 3",`m3',"
+> p-value (of Measure 3)","(`p3')") adjr2  sortvar(P2P_Binary_pub_L_recip P2P_Binar
+> y_Switcher_recip P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip P2P_RegInde
+> x_Adj_pub_L_recip P2P_RegIndex_Adj_Switcher_recip Switcher_P2P_recip    )  label 
+> keep(`r(X)') ctitle("Raw-Foreign")
+dir : seeout
+
+. 
+. 
+. reghdfe lntotal_adfin_in P2P_RegIndex_pub_L_recip Switcher_P2P_recip P2P_RegIndex
+> _Switcher_recip /// 
+>                 RL_EST_L_recip /// 
+>                                 ///
+>                  lngdp_L_recip /// 
+>                  Time_startup_L_recip Cost_startup_L_recip Tax_income_pct_L_recip
+>  ///
+>                                 GC_LegalRights_L_recip ///
+>                                 GC_CreditInfo_L_recip ///
+>                                 RI_L_recip  ///
+>                 Bank_C2A_L_recip ///
+>                 DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip /// 
+>                 Bank_NPL_L_recip /// 
+>                 /// 
+>                 lnMobilePhoneUsage_L_recip ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year) 
+note: Switcher_P2P_recip is probably collinear with the fixed effects (all partiall
+> ed-out values are close to zero; tol = 1.0e-09)
+(MWFE estimator converged in 6 iterations)
+note: Switcher_P2P_recip omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      3,119
+Absorbing 2 HDFE groups                           F(  15,    505) =       2.40
+Statistics robust to heteroskedasticity           Prob > F        =     0.0023
+                                                  R-squared       =     0.1123
+                                                  Adj R-squared   =     0.0771
+                                                  Within R-sq.    =     0.0037
+Number of clusters (Recipient_country##year) =        506Root MSE =     2.6288
+
+                  (Std. err. adjusted for 506 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lntotal_adfin_in | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+P2~x_pub_L_recip |  -.0299807   .0117794    -2.55   0.011    -.0531234    -.006838
+Switcher_P2P_r~p |          0  (omitted)
+P2P_RegIndex_S~p |   .0226333   .0126772     1.79   0.075    -.0022733    .0475399
+  RL_EST_L_recip |   .7033479   .4965937     1.42   0.157    -.2722961    1.678992
+   lngdp_L_recip |   .5610477   .6313493     0.89   0.375     -.679347    1.801442
+Time_startup_L~p |   .0024834   .0059549     0.42   0.677     -.009216    .0141828
+Cost_startup_L~p |  -.0048396   .0079276    -0.61   0.542    -.0204147    .0107356
+Tax_income_pct~p |  -.0287164   .0181152    -1.59   0.114    -.0643069     .006874
+GC_LegalRights~p |   .0038986   .0055269     0.71   0.481      -.00696    .0147572
+GC_CreditInfo_~p |  -.0102449   .0049416    -2.07   0.039    -.0199535   -.0005363
+      RI_L_recip |    .033292   .0160278     2.08   0.038     .0018027    .0647814
+Bank_C2A_L_recip |  -.0544449   .0530579    -1.03   0.305    -.1586863    .0497965
+DomCredit_by_b~p |  -.0002827   .0059367    -0.05   0.962    -.0119463    .0113809
+lnBankBranch_p~p |  -.3056548   .5125624    -0.60   0.551    -1.312672    .7013626
+Bank_NPL_L_recip |   .0335859   .0138788     2.42   0.016     .0063187    .0608531
+lnMobilePhoneU~p |   .6427062    .652566     0.98   0.325    -.6393723    1.924785
+           _cons |  -16.18468   15.86303    -1.02   0.308    -47.35033    14.98098
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |       100           0         100     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. local m1 = round((_b[P2P_RegIndex_pub_L_recip] + _b[P2P_RegIndex_Switcher_recip])
+> *`switcher_P2P_RegIndex',0.001)
+
+. local m2 = round(_b[P2P_RegIndex_pub_L_recip]*`always_P2P_RegIndex',0.001)
+
+. local m3 = round(_b[P2P_RegIndex_pub_L_recip]*(`switcher_P2P_RegIndex' - `always_
+> P2P_RegIndex') + _b[P2P_RegIndex_Switcher_recip]*`switcher_P2P_RegIndex',0.001)
+
+. 
+. test (P2P_RegIndex_pub_L_recip + P2P_RegIndex_Switcher_recip)*`switcher_P2P_RegIn
+> dex' = 0
+
+ ( 1)  21.48966*P2P_RegIndex_pub_L_recip + 21.48966*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   505) =    1.05
+            Prob > F =    0.3063
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test  P2P_RegIndex_pub_L_recip*`always_P2P_RegIndex' = 0
+
+ ( 1)  17.45*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,   505) =    6.48
+            Prob > F =    0.0112
+
+. local p2 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test P2P_RegIndex_pub_L_recip*(`switcher_P2P_RegIndex' - `always_P2P_RegIndex') +
+>  P2P_RegIndex_Switcher_recip*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  4.039655*P2P_RegIndex_pub_L_recip + 21.48966*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   505) =    2.43
+            Prob > F =    0.1198
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+.                                 
+. est save t8Am4,replace
+file t8Am4.ster saved
+
+. indeplist
+Independent variables: P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip RL_EST_
+> L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_income_pct_L_
+> recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2A_L_recip Do
+> mCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_recip lnMobilePh
+> oneUsage_L_recip
+
+. outreg2 t8Am4 using regression_submission_platform_level_Table8A, append  st(coef
+>  tstat) auto(3) nonotes dta   addtext("Recipient country FE & Year FE", "Yes","Av
+> erage Effect of Introducing Regulation: Measure 1",`m1',"p-value (of Measure 1)",
+> "(`p1')","Average Effect of Introducing Regulation: Measure 2",`m2',"p-value (of 
+> Measure 2)","(`p2')","Average Effect of Introducing Regulation: Measure 3",`m3',"
+> p-value (of Measure 3)","(`p3')") adjr2  sortvar(P2P_Binary_pub_L_recip P2P_Binar
+> y_Switcher_recip P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip P2P_RegInde
+> x_Adj_pub_L_recip P2P_RegIndex_Adj_Switcher_recip Switcher_P2P_recip    )  label 
+> keep(`r(X)') ctitle("Raw-Foreign")
+dir : seeout
+
+. 
+. 
+. replace P2P_RegIndex_pub_L_recip = P2P_RegIndex_Adj_pub_L_recip
+(5,315 real changes made)
+
+. replace P2P_RegIndex_Switcher_recip = P2P_RegIndex_Adj_Switcher_recip
+(3,901 real changes made)
+
+. 
+. 
+. reghdfe lntotal_adfin_dom P2P_RegIndex_pub_L_recip Switcher_P2P_recip  P2P_RegInd
+> ex_Switcher_recip /// 
+>                 RL_EST_L_recip /// 
+>                  lngdp_L_recip /// 
+>                                  if year >= 2015 , a(i.Recipient_country i.year) 
+> vce(cluster i.Recipient_country##i.year)
+(dropped 7 singleton observations)
+note: Switcher_P2P_recip is probably collinear with the fixed effects (all partiall
+> ed-out values are close to zero; tol = 1.0e-09)
+(MWFE estimator converged in 6 iterations)
+note: Switcher_P2P_recip omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      6,023
+Absorbing 2 HDFE groups                           F(   4,    443) =       0.78
+Statistics robust to heteroskedasticity           Prob > F        =     0.5402
+                                                  R-squared       =     0.4481
+                                                  Adj R-squared   =     0.4391
+                                                  Within R-sq.    =     0.0012
+Number of clusters (Recipient_country##year) =        444Root MSE =     3.1267
+
+                  (Std. err. adjusted for 444 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lntotal_adfin_~m | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+P2~x_pub_L_recip |  -.0090979   .0642171    -0.14   0.887    -.1353059      .11711
+Switcher_P2P_r~p |          0  (omitted)
+P2P_RegIndex_S~p |   .0073745   .0447785     0.16   0.869    -.0806302    .0953792
+  RL_EST_L_recip |   .1594646   .9768592     0.16   0.870     -1.76039    2.079319
+   lngdp_L_recip |  -2.054107   2.469448    -0.83   0.406    -6.907395    2.799181
+           _cons |   63.72179   70.76626     0.90   0.368    -75.35752    202.8011
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        89           0          89     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. 
+. local m1 = round((_b[P2P_RegIndex_pub_L_recip] + _b[P2P_RegIndex_Switcher_recip])
+> *`switcher_P2P_RegIndex_Adj',0.001) 
+
+. local m2 = round(_b[P2P_RegIndex_pub_L_recip]*`always_P2P_RegIndex_Adj',0.001)
+
+. local m3 = round(_b[P2P_RegIndex_pub_L_recip]*(`switcher_P2P_RegIndex_Adj' - `alw
+> ays_P2P_RegIndex_Adj') + _b[P2P_RegIndex_Switcher_recip]*`switcher_P2P_RegIndex_A
+> dj',0.001)
+
+. 
+. test (P2P_RegIndex_pub_L_recip + P2P_RegIndex_Switcher_recip)*`switcher_P2P_RegIn
+> dex_Adj' = 0
+
+ ( 1)  5.926743*P2P_RegIndex_pub_L_recip + 5.926743*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   443) =    0.00
+            Prob > F =    0.9612
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test  P2P_RegIndex_pub_L_recip*`always_P2P_RegIndex_Adj' = 0
+
+ ( 1)  4.825556*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,   443) =    0.02
+            Prob > F =    0.8874
+
+. local p2 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test P2P_RegIndex_pub_L_recip*(`switcher_P2P_RegIndex_Adj' - `always_P2P_RegIndex
+> _Adj') + P2P_RegIndex_Switcher_recip*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  1.101188*P2P_RegIndex_pub_L_recip + 5.926743*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   443) =    0.03
+            Prob > F =    0.8719
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+.         
+. est save t8Am5,replace
+file t8Am5.ster saved
+
+. indeplist
+Independent variables: P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip RL_EST_
+> L_recip lngdp_L_recip
+
+. outreg2 t8Am5 using regression_submission_platform_level_Table8A, append  st(coef
+>  tstat) auto(3) nonotes dta   addtext("Recipient country FE & Year FE", "Yes","Av
+> erage Effect of Introducing Regulation: Measure 1",`m1',"p-value (of Measure 1)",
+> "(`p1')","Average Effect of Introducing Regulation: Measure 2",`m2',"p-value (of 
+> Measure 2)","(`p2')","Average Effect of Introducing Regulation: Measure 3",`m3',"
+> p-value (of Measure 3)","(`p3')") adjr2  sortvar(P2P_Binary_pub_L_recip P2P_Binar
+> y_Switcher_recip P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip P2P_RegInde
+> x_pub_L_recip P2P_RegIndex_Switcher_recip Switcher_P2P_recip    )  label keep(`r(
+> X)') ctitle("Adj-Domestic")
+dir : seeout
+
+. 
+. 
+. reghdfe lntotal_adfin_dom P2P_RegIndex_pub_L_recip Switcher_P2P_recip  P2P_RegInd
+> ex_Switcher_recip /// 
+>                 RL_EST_L_recip /// 
+>                                 ///
+>                  lngdp_L_recip /// 
+>                  Time_startup_L_recip Cost_startup_L_recip Tax_income_pct_L_recip
+>  ///
+>                                 GC_LegalRights_L_recip ///
+>                                 GC_CreditInfo_L_recip ///
+>                                 RI_L_recip  ///
+>                 Bank_C2A_L_recip ///
+>                 DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip /// 
+>                 Bank_NPL_L_recip /// 
+>                 /// 
+>                 lnMobilePhoneUsage_L_recip ///
+>                                  if year >= 2015 , a(i.Recipient_country i.year) 
+> vce(cluster i.Recipient_country##i.year) 
+(dropped 3 singleton observations)
+note: Switcher_P2P_recip is probably collinear with the fixed effects (all partiall
+> ed-out values are close to zero; tol = 1.0e-09)
+(MWFE estimator converged in 6 iterations)
+note: Switcher_P2P_recip omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      5,062
+Absorbing 2 HDFE groups                           F(  15,    312) =       1.83
+Statistics robust to heteroskedasticity           Prob > F        =     0.0296
+                                                  R-squared       =     0.4653
+                                                  Adj R-squared   =     0.4562
+                                                  Within R-sq.    =     0.0186
+Number of clusters (Recipient_country##year) =        313Root MSE =     3.0923
+
+                  (Std. err. adjusted for 313 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lntotal_adfin_~m | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+P2~x_pub_L_recip |   .0437179   .0763381     0.57   0.567    -.1064848    .1939206
+Switcher_P2P_r~p |          0  (omitted)
+P2P_RegIndex_S~p |   .0079573   .0449798     0.18   0.860    -.0805449    .0964595
+  RL_EST_L_recip |   4.739256    2.02425     2.34   0.020     .7563493    8.722164
+   lngdp_L_recip |  -2.027001   2.283313    -0.89   0.375     -6.51964    2.465639
+Time_startup_L~p |   .0175635   .0229477     0.77   0.445    -.0275883    .0627154
+Cost_startup_L~p |  -.0697151   .0455989    -1.53   0.127    -.1594353    .0200052
+Tax_income_pct~p |     .07811   .0531515     1.47   0.143    -.0264708    .1826907
+GC_LegalRights~p |    .033204   .0122687     2.71   0.007     .0090642    .0573439
+GC_CreditInfo_~p |  -.0076629   .0084911    -0.90   0.368    -.0243699    .0090442
+      RI_L_recip |   .0125516   .0226613     0.55   0.580    -.0320368    .0571399
+Bank_C2A_L_recip |   .1921808   .1311773     1.47   0.144    -.0659232    .4502847
+DomCredit_by_b~p |  -.0366718   .0340877    -1.08   0.283    -.1037427    .0303991
+lnBankBranch_p~p |  -1.049589   1.380737    -0.76   0.448    -3.766322    1.667143
+Bank_NPL_L_recip |   .0631644   .0616198     1.03   0.306    -.0580784    .1844073
+lnMobilePhoneU~p |  -6.297453   3.609601    -1.74   0.082    -13.39969    .8047849
+           _cons |   92.67622   80.25846     1.15   0.249    -65.24005    250.5925
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        65           0          65     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. local m1 = round((_b[P2P_RegIndex_pub_L_recip] + _b[P2P_RegIndex_Switcher_recip])
+> *`switcher_P2P_RegIndex_Adj',0.001) 
+
+. local m2 = round(_b[P2P_RegIndex_pub_L_recip]*`always_P2P_RegIndex_Adj',0.001)
+
+. local m3 = round(_b[P2P_RegIndex_pub_L_recip]*(`switcher_P2P_RegIndex_Adj' - `alw
+> ays_P2P_RegIndex_Adj') + _b[P2P_RegIndex_Switcher_recip]*`switcher_P2P_RegIndex_A
+> dj',0.001)
+
+. 
+. test (P2P_RegIndex_pub_L_recip + P2P_RegIndex_Switcher_recip)*`switcher_P2P_RegIn
+> dex_Adj' = 0
+
+ ( 1)  5.926743*P2P_RegIndex_pub_L_recip + 5.926743*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   312) =    0.46
+            Prob > F =    0.4973
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test  P2P_RegIndex_pub_L_recip*`always_P2P_RegIndex_Adj' = 0
+
+ ( 1)  4.825556*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,   312) =    0.33
+            Prob > F =    0.5673
+
+. local p2 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test P2P_RegIndex_pub_L_recip*(`switcher_P2P_RegIndex_Adj' - `always_P2P_RegIndex
+> _Adj') + P2P_RegIndex_Switcher_recip*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  1.101188*P2P_RegIndex_pub_L_recip + 5.926743*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   312) =    0.14
+            Prob > F =    0.7080
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. 
+. est save t8Am6,replace
+file t8Am6.ster saved
+
+. indeplist
+Independent variables: P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip RL_EST_
+> L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_income_pct_L_
+> recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2A_L_recip Do
+> mCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_recip lnMobilePh
+> oneUsage_L_recip
+
+. outreg2 t8Am6 using regression_submission_platform_level_Table8A, append  st(coef
+>  tstat) auto(3) nonotes dta   addtext("Recipient country FE & Year FE", "Yes","Av
+> erage Effect of Introducing Regulation: Measure 1",`m1',"p-value (of Measure 1)",
+> "(`p1')","Average Effect of Introducing Regulation: Measure 2",`m2',"p-value (of 
+> Measure 2)","(`p2')","Average Effect of Introducing Regulation: Measure 3",`m3',"
+> p-value (of Measure 3)","(`p3')") adjr2  sortvar(P2P_Binary_pub_L_recip P2P_Binar
+> y_Switcher_recip P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip P2P_RegInde
+> x_pub_L_recip P2P_RegIndex_Switcher_recip Switcher_P2P_recip    )  label keep(`r(
+> X)') ctitle("Adj-Domestic")
+dir : seeout
+
+. 
+. 
+. 
+. 
+. reghdfe lntotal_adfin_in P2P_RegIndex_pub_L_recip Switcher_P2P_recip  P2P_RegInde
+> x_Switcher_recip /// 
+>                 RL_EST_L_recip /// 
+>                  lngdp_L_recip /// 
+>                                  if year >= 2015 , a(i.Recipient_country i.year) 
+> vce(cluster i.Recipient_country##i.year)
+(dropped 4 singleton observations)
+note: Switcher_P2P_recip is probably collinear with the fixed effects (all partiall
+> ed-out values are close to zero; tol = 1.0e-09)
+(MWFE estimator converged in 6 iterations)
+note: Switcher_P2P_recip omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      4,480
+Absorbing 2 HDFE groups                           F(   4,    917) =       1.27
+Statistics robust to heteroskedasticity           Prob > F        =     0.2800
+                                                  R-squared       =     0.1211
+                                                  Adj R-squared   =     0.0830
+                                                  Within R-sq.    =     0.0006
+Number of clusters (Recipient_country##year) =        918Root MSE =     2.4879
+
+                  (Std. err. adjusted for 918 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lntotal_adfin_in | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+P2~x_pub_L_recip |  -.0356229   .0509222    -0.70   0.484    -.1355606    .0643148
+Switcher_P2P_r~p |          0  (omitted)
+P2P_RegIndex_S~p |    .045533   .0550672     0.83   0.409    -.0625393    .1536053
+  RL_EST_L_recip |   .4560097   .3857346     1.18   0.237    -.3010153    1.213035
+   lngdp_L_recip |   .6947228   .3868859     1.80   0.073    -.0645617    1.454007
+           _cons |  -17.00077   10.03819    -1.69   0.091    -36.70127    2.699728
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |       178           0         178     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. 
+. local m1 = round((_b[P2P_RegIndex_pub_L_recip] + _b[P2P_RegIndex_Switcher_recip])
+> *`switcher_P2P_RegIndex_Adj',0.001) 
+
+. local m2 = round(_b[P2P_RegIndex_pub_L_recip]*`always_P2P_RegIndex_Adj',0.001)
+
+. local m3 = round(_b[P2P_RegIndex_pub_L_recip]*(`switcher_P2P_RegIndex_Adj' - `alw
+> ays_P2P_RegIndex_Adj') + _b[P2P_RegIndex_Switcher_recip]*`switcher_P2P_RegIndex_A
+> dj',0.001)
+
+. 
+. test (P2P_RegIndex_pub_L_recip + P2P_RegIndex_Switcher_recip)*`switcher_P2P_RegIn
+> dex_Adj' = 0
+
+ ( 1)  5.926743*P2P_RegIndex_pub_L_recip + 5.926743*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   917) =    0.19
+            Prob > F =    0.6637
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test  P2P_RegIndex_pub_L_recip*`always_P2P_RegIndex_Adj' = 0
+
+ ( 1)  4.825556*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,   917) =    0.49
+            Prob > F =    0.4844
+
+. local p2 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test P2P_RegIndex_pub_L_recip*(`switcher_P2P_RegIndex_Adj' - `always_P2P_RegIndex
+> _Adj') + P2P_RegIndex_Switcher_recip*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  1.101188*P2P_RegIndex_pub_L_recip + 5.926743*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   917) =    0.70
+            Prob > F =    0.4041
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+.         
+. est save t8Am7,replace
+file t8Am7.ster saved
+
+. indeplist
+Independent variables: P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip RL_EST_
+> L_recip lngdp_L_recip
+
+. outreg2 t8Am7 using regression_submission_platform_level_Table8A, append  st(coef
+>  tstat) auto(3) nonotes dta   addtext("Recipient country FE & Year FE", "Yes","Av
+> erage Effect of Introducing Regulation: Measure 1",`m1',"p-value (of Measure 1)",
+> "(`p1')","Average Effect of Introducing Regulation: Measure 2",`m2',"p-value (of 
+> Measure 2)","(`p2')","Average Effect of Introducing Regulation: Measure 3",`m3',"
+> p-value (of Measure 3)","(`p3')") adjr2  sortvar(P2P_Binary_pub_L_recip P2P_Binar
+> y_Switcher_recip P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip P2P_RegInde
+> x_pub_L_recip P2P_RegIndex_Switcher_recip Switcher_P2P_recip    )  label keep(`r(
+> X)') ctitle("Adj-Foreign")
+dir : seeout
+
+. 
+. 
+. reghdfe lntotal_adfin_in P2P_RegIndex_pub_L_recip Switcher_P2P_recip  P2P_RegInde
+> x_Switcher_recip /// 
+>                 RL_EST_L_recip /// 
+>                                 ///
+>                  lngdp_L_recip /// 
+>                  Time_startup_L_recip Cost_startup_L_recip Tax_income_pct_L_recip
+>  ///
+>                                 GC_LegalRights_L_recip ///
+>                                 GC_CreditInfo_L_recip ///
+>                                 RI_L_recip  ///
+>                 Bank_C2A_L_recip ///
+>                 DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip /// 
+>                 Bank_NPL_L_recip /// 
+>                 /// 
+>                 lnMobilePhoneUsage_L_recip ///
+>                                  if year >= 2015 , a(i.Recipient_country i.year) 
+> vce(cluster i.Recipient_country##i.year) 
+note: Switcher_P2P_recip is probably collinear with the fixed effects (all partiall
+> ed-out values are close to zero; tol = 1.0e-09)
+(MWFE estimator converged in 6 iterations)
+note: Switcher_P2P_recip omitted because of collinearity
+
+HDFE Linear regression                            Number of obs   =      3,119
+Absorbing 2 HDFE groups                           F(  15,    505) =       2.38
+Statistics robust to heteroskedasticity           Prob > F        =     0.0025
+                                                  R-squared       =     0.1123
+                                                  Adj R-squared   =     0.0770
+                                                  Within R-sq.    =     0.0036
+Number of clusters (Recipient_country##year) =        506Root MSE =     2.6289
+
+                  (Std. err. adjusted for 506 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lntotal_adfin_in | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+P2~x_pub_L_recip |  -.1093398   .0435285    -2.51   0.012    -.1948591   -.0238205
+Switcher_P2P_r~p |          0  (omitted)
+P2P_RegIndex_S~p |   .0896875   .0467859     1.92   0.056    -.0022314    .1816064
+  RL_EST_L_recip |    .703171    .496955     1.41   0.158    -.2731829    1.679525
+   lngdp_L_recip |   .5565511   .6316006     0.88   0.379    -.6843373    1.797439
+Time_startup_L~p |   .0029304    .005895     0.50   0.619    -.0086512    .0145121
+Cost_startup_L~p |  -.0050954   .0079147    -0.64   0.520    -.0206452    .0104544
+Tax_income_pct~p |  -.0285967   .0181868    -1.57   0.116    -.0643277    .0071343
+GC_LegalRights~p |   .0038943   .0055171     0.71   0.481     -.006945    .0147336
+GC_CreditInfo_~p |  -.0102046   .0049478    -2.06   0.040    -.0199253   -.0004838
+      RI_L_recip |   .0338037   .0159236     2.12   0.034     .0025192    .0650883
+Bank_C2A_L_recip |  -.0557688   .0530639    -1.05   0.294    -.1600221    .0484844
+DomCredit_by_b~p |  -.0002502   .0059281    -0.04   0.966    -.0118969    .0113965
+lnBankBranch_p~p |  -.3028072   .5134196    -0.59   0.556    -1.311509    .7058942
+Bank_NPL_L_recip |   .0335206   .0138599     2.42   0.016     .0062904    .0607509
+lnMobilePhoneU~p |   .6086418    .653371     0.93   0.352    -.6750183    1.892302
+           _cons |   -15.9554   15.86939    -1.01   0.315    -47.13355    15.22275
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |       100           0         100     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. local m1 = round((_b[P2P_RegIndex_pub_L_recip] + _b[P2P_RegIndex_Switcher_recip])
+> *`switcher_P2P_RegIndex_Adj',0.001) 
+
+. local m2 = round(_b[P2P_RegIndex_pub_L_recip]*`always_P2P_RegIndex_Adj',0.001)
+
+. local m3 = round(_b[P2P_RegIndex_pub_L_recip]*(`switcher_P2P_RegIndex_Adj' - `alw
+> ays_P2P_RegIndex_Adj') + _b[P2P_RegIndex_Switcher_recip]*`switcher_P2P_RegIndex_A
+> dj',0.001)
+
+. 
+. test (P2P_RegIndex_pub_L_recip + P2P_RegIndex_Switcher_recip)*`switcher_P2P_RegIn
+> dex_Adj' = 0
+
+ ( 1)  5.926743*P2P_RegIndex_pub_L_recip + 5.926743*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   505) =    0.55
+            Prob > F =    0.4607
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test  P2P_RegIndex_pub_L_recip*`always_P2P_RegIndex_Adj' = 0
+
+ ( 1)  4.825556*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,   505) =    6.31
+            Prob > F =    0.0123
+
+. local p2 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. test P2P_RegIndex_pub_L_recip*(`switcher_P2P_RegIndex_Adj' - `always_P2P_RegIndex
+> _Adj') + P2P_RegIndex_Switcher_recip*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  1.101188*P2P_RegIndex_pub_L_recip + 5.926743*P2P_RegIndex_Switcher_recip = 0
+
+       F(  1,   505) =    2.96
+            Prob > F =    0.0861
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. 
+. est save t8Am8,replace
+file t8Am8.ster saved
+
+. indeplist
+Independent variables: P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip RL_EST_
+> L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_income_pct_L_
+> recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2A_L_recip Do
+> mCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_recip lnMobilePh
+> oneUsage_L_recip
+
+. outreg2 t8Am8 using regression_submission_platform_level_Table8A, append  st(coef
+>  tstat) auto(3) nonotes dta   addtext("Recipient country FE & Year FE", "Yes","Av
+> erage Effect of Introducing Regulation: Measure 1",`m1',"p-value (of Measure 1)",
+> "(`p1')","Average Effect of Introducing Regulation: Measure 2",`m2',"p-value (of 
+> Measure 2)","(`p2')","Average Effect of Introducing Regulation: Measure 3",`m3',"
+> p-value (of Measure 3)","(`p3')") adjr2  sortvar(P2P_Binary_pub_L_recip P2P_Binar
+> y_Switcher_recip P2P_RegIndex_pub_L_recip P2P_RegIndex_Switcher_recip P2P_RegInde
+> x_pub_L_recip P2P_RegIndex_Switcher_recip Switcher_P2P_recip    )  label keep(`r(
+> X)') ctitle("Adj-Foreign")
+dir : seeout
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. ***************************************************
+. *Table 11******************************************
+. ***************************************************
+. ***************************************************
+. **Panel C Part II**********************************
+. ***************************************************
+. ***************************************************
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_p
+> ackage"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. use country_panel_data_final,clear
+
+. 
+. bys Recipient_country (year): egen switcher_P2P_RegIndex = mean(P2P_RegIndex_pub_
+> L_recip)  if Switcher_P2P_recip == 1 & year >= P2P_year_recip + 1 & year >= 2015 
+> & year <= 2020 & P2P_year_recip!= 0
+(1,117 missing values generated)
+
+. 
+. bys Recipient_country (year): egen switcher_P2P_RegIndex_Adj = mean(P2P_RegIndex_
+> Adj_pub_L_recip)  if Switcher_P2P_recip == 1 & year >= P2P_year_recip + 1 & year 
+> >= 2015 & year <= 2020 & P2P_year_recip!= 0
+(1,117 missing values generated)
+
+. 
+. bys Recipient_country (year): replace switcher_P2P_RegIndex = . if year != P2P_ye
+> ar_recip + 1
+(66 real changes made, 66 to missing)
+
+. 
+. bys Recipient_country (year): replace switcher_P2P_RegIndex_Adj =. if year != P2P
+> _year_recip + 1
+(66 real changes made, 66 to missing)
+
+. 
+. sum switcher_P2P_RegIndex 
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+switcher_P~x |         29    21.48966    8.464816          6         43
+
+. local switcher_P2P_RegIndex = r(mean)
+
+. 
+. sum switcher_P2P_RegIndex_Adj
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+switcher_P~j |         29    5.926743    2.317778   2.166667   10.13889
+
+. local switcher_P2P_RegIndex_Adj = r(mean)
+
+. 
+. 
+. ***************************************************
+. ***************************************************
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_p
+> ackage"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. use platform_panel_data_final,clear
+
+. 
+. ren lntotal_adfin_dom lntotal_adfin_dom_plat 
+
+. ren lnretail_adfin_dom lnretail_adfin_dom_plat
+
+. ren lninst_adfin_dom lninst_adfin_dom_plat
+
+. 
+. merge m:1 recipient_country year using psm_matched_all_regulations_v3
+(label Recipient_country already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         8,924
+        from master                     8,922  (_merge==1)
+        from using                          2  (_merge==2)
+
+    Matched                             1,714  (_merge==3)
+    -----------------------------------------
+
+. keep if _merge == 3
+(8,924 observations deleted)
+
+. drop _merge 
+
+. 
+. 
+. replace indivfunder_numby_model = . if indivfunder_numby_model == 0  |  recipient
+> _country != source_country
+(407 real changes made, 407 to missing)
+
+. replace fundraiser_numby_model = . if fundraiser_numby_model == 0 |  recipient_co
+> untry != source_country
+(631 real changes made, 631 to missing)
+
+. 
+. gen ln_indivfunder_numby_model = ln(1+indivfunder_numby_model)
+(1,418 missing values generated)
+
+. gen ln_fundraiser_numby_model = ln(1+fundraiser_numby_model)
+(1,148 missing values generated)
+
+. 
+. gen regulated = (P2P_RegIndex_pub_L_recip > 0)
+
+. 
+. sort CompanyID recipient_country year
+
+. bys CompanyID recipient_country (year): gen entry_year = year[1] if altfin_vol_us
+> d[1] != . 
+
+. 
+. cap drop new_plat
+
+. gen new_plat = (entry_year >= P2P_year_recip + 1 & P2P_year_recip != 0) if P2P_ye
+> ar_recip != . & recipient_country == source_country
+(714 missing values generated)
+
+. replace new_plat = 0 if P2P_year_recip == 0 & recipient_country == source_country
+(0 real changes made)
+
+. replace new_plat = . if recipient_country != source_country
+(0 real changes made)
+
+. 
+. gen P2P_RegIndex_newplat = P2P_RegIndex_pub_L_recip*new_plat
+(714 missing values generated)
+
+. gen P2P_RegIndex_Adj_newplat = P2P_RegIndex_Adj_pub_L_recip*new_plat
+(714 missing values generated)
+
+. 
+. label var regulated "Regulated (debt)"
+
+. label var new_plat "New Platform Indicator"
+
+. label var P2P_RegIndex_newplat "Regulation Index (debt) X New Platform Indicator"
+
+. label var P2P_RegIndex_Adj_newplat "Regulation Index (debt) X New Platform Indica
+> tor"
+
+. 
+. global model1 P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_newplat RL_EST_L_rec
+> ip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_income_pct_L_recip
+>  GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2A_L_recip DomCred
+> it_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_recip lnMobilePhoneUs
+> age_L_recip
+
+. 
+. global model2 regulated $model1
+
+. 
+. reghdfe lntotal_adfin_dom_plat $model2 ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =        935
+Absorbing 2 HDFE groups                           F(  17,     84) =       4.74
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.1676
+                                                  Adj R-squared   =     0.1323
+                                                  Within R-sq.    =     0.0252
+Number of clusters (Recipient_country##year) =         85Root MSE =     3.2018
+
+                   (Std. err. adjusted for 85 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lntotal_adfin_~t | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       regulated |  -2.302231   1.989522    -1.16   0.250    -6.258613    1.654151
+P2~x_pub_L_recip |   .1130658   .0932362     1.21   0.229    -.0723445    .2984762
+        new_plat |  -4.764195   1.791685    -2.66   0.009    -8.327157   -1.201234
+P2P_RegIndex_n~t |   .2025759   .0818046     2.48   0.015     .0398985    .3652532
+  RL_EST_L_recip |   1.922097    .896965     2.14   0.035     .1383842    3.705811
+   lngdp_L_recip |    2.99535   2.439757     1.23   0.223    -1.856375    7.847074
+Time_startup_L~p |  -.0579589   .0324583    -1.79   0.078    -.1225059     .006588
+Cost_startup_L~p |  -.0014958   .0664109    -0.02   0.982    -.1335612    .1305697
+Tax_income_pct~p |  -.0860627   .0463806    -1.86   0.067    -.1782957    .0061703
+GC_LegalRights~p |   .0301935   .0251695     1.20   0.234    -.0198588    .0802458
+GC_CreditInfo_~p |  -.0255824   .0214474    -1.19   0.236    -.0682329    .0170681
+      RI_L_recip |   .0167277   .0352764     0.47   0.637    -.0534233    .0868786
+Bank_C2A_L_recip |   .0750202   .1194395     0.63   0.532    -.1624985    .3125388
+DomCredit_by_b~p |   .0575264   .0266494     2.16   0.034     .0045312    .1105217
+lnBankBranch_p~p |  -5.432954   1.403665    -3.87   0.000    -8.224297   -2.641612
+Bank_NPL_L_recip |  -.1623339   .0766244    -2.12   0.037    -.3147098    -.009958
+lnMobilePhoneU~p |    1.13458   2.131594     0.53   0.596     -3.10433    5.373489
+           _cons |   -70.2745   63.00389    -1.12   0.268    -195.5646    55.01564
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        17           0          17     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. 
+. local m1 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x',0.001)
+
+. local m3 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x' + _b[P2P_RegIndex_newplat]*`switcher_P2P_RegIndex',0.001)
+
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  regulated + 21.48966*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,    84) =    0.15
+            Prob > F =    0.6988
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex' + _b[P2P_
+> RegIndex_newplat]*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  regulated + 21.48966*P2P_RegIndex_pub_L_recip +
+       21.48966*P2P_RegIndex_newplat = 0
+
+       F(  1,    84) =    5.97
+            Prob > F =    0.0167
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+.  
+. est save t11CIm1,replace
+file t11CIm1.ster saved
+
+. indeplist
+Independent variables: regulated P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_new
+> plat RL_EST_L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_i
+> ncome_pct_L_recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2
+> A_L_recip DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_reci
+> p lnMobilePhoneUsage_L_recip
+
+. 
+. outreg2 t11CIm1 using regression_submission_platform_level_Table11CI, replace  st
+> (coef tstat) auto(3) nonotes dta addtext("Recipient country FE & Year FE", "Yes",
+> "Average Effect of Introducing Regulation for Old Platforms",`m1',"p-value (of Me
+> asure 1)","(`p1')","Average Effect of Introducing Regulation for New Platforms",`
+> m3',"p-value (of Measure 3)","(`p3')") adjr2 label keep(`r(X)') ctitle("Raw-Total
+> ") sortvar(regulated P2P_RegIndex_pub_L_recip P2P_RegIndex_Adj_pub_L_recip new_pl
+> at P2P_RegIndex_newplat  P2P_RegIndex_Adj_newplat) title("Table 11 Panel C Part I
+> I.1: This table reports the estimation results based on the PSM-matched samples a
+> nd investigates the conditional effect of regulatory clarity on the domestic debt
+>  volume generated on old and new platforms, respectively. The independent variabl
+> e, New Platform Indicators, equals one if the platform enters the market at least
+>  in year after the publication of the explicit regulation. The variable, Regulate
+> d, indicates whether the jurisdication has introduced a regulation. All independe
+> nt variables are described in the Appendix and are lagged by a year. All regressi
+> ons include country and year fixed effects. Heteroscedasticity-consistent robust 
+> standard errors are clustered by country and year, following Thompson (2011). ***
+>  p<0.01, ** p<0.05, * p<0.1")
+dir : seeout
+
+. 
+.                 
+. reghdfe lnretail_adfin_dom_plat $model2 ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =        935
+Absorbing 2 HDFE groups                           F(  17,     84) =       4.82
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.1562
+                                                  Adj R-squared   =     0.1204
+                                                  Within R-sq.    =     0.0218
+Number of clusters (Recipient_country##year) =         85Root MSE =     3.0472
+
+                   (Std. err. adjusted for 85 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lnretail_adfin~t | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       regulated |  -2.735255   1.694859    -1.61   0.110    -6.105668    .6351589
+P2~x_pub_L_recip |    .129613   .0796365     1.63   0.107    -.0287529    .2879789
+        new_plat |  -4.491531   1.920075    -2.34   0.022     -8.30981   -.6732515
+P2P_RegIndex_n~t |   .2046553   .0898384     2.28   0.025     .0260018    .3833088
+  RL_EST_L_recip |   2.227956   .8447499     2.64   0.010     .5480786    3.907834
+   lngdp_L_recip |   3.257145   2.123147     1.53   0.129    -.9649656    7.479256
+Time_startup_L~p |  -.0243302   .0276676    -0.88   0.382    -.0793503    .0306899
+Cost_startup_L~p |   .0057832   .0481827     0.12   0.905    -.0900333    .1015998
+Tax_income_pct~p |  -.0808834   .0417254    -1.94   0.056    -.1638588    .0020921
+GC_LegalRights~p |    .024823   .0230011     1.08   0.284    -.0209172    .0705632
+GC_CreditInfo_~p |  -.0142411   .0209328    -0.68   0.498    -.0558684    .0273861
+      RI_L_recip |   -.032862   .0221961    -1.48   0.142    -.0770013    .0112773
+Bank_C2A_L_recip |   .1343146   .1134965     1.18   0.240    -.0913856    .3600148
+DomCredit_by_b~p |   .0457486   .0206988     2.21   0.030     .0045869    .0869104
+lnBankBranch_p~p |  -5.610185   1.162277    -4.83   0.000      -7.9215   -3.298871
+Bank_NPL_L_recip |  -.1580755   .0636866    -2.48   0.015    -.2847233   -.0314277
+lnMobilePhoneU~p |   1.125833   2.019911     0.56   0.579    -2.890982    5.142648
+           _cons |  -75.72561   55.11369    -1.37   0.173    -185.3252    33.87401
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        17           0          17     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. 
+. local m1 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x',0.001)
+
+. local m3 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x' + _b[P2P_RegIndex_newplat]*`switcher_P2P_RegIndex',0.001)
+
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  regulated + 21.48966*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,    84) =    0.03
+            Prob > F =    0.8682
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex' + _b[P2P_
+> RegIndex_newplat]*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  regulated + 21.48966*P2P_RegIndex_pub_L_recip +
+       21.48966*P2P_RegIndex_newplat = 0
+
+       F(  1,    84) =    5.11
+            Prob > F =    0.0263
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+.  
+. est save t11CIm2,replace
+file t11CIm2.ster saved
+
+. indeplist
+Independent variables: regulated P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_new
+> plat RL_EST_L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_i
+> ncome_pct_L_recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2
+> A_L_recip DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_reci
+> p lnMobilePhoneUsage_L_recip
+
+. 
+. outreg2 t11CIm2 using regression_submission_platform_level_Table11CI, append  st(
+> coef tstat) auto(3) nonotes dta addtext("Recipient country FE & Year FE", "Yes","
+> Average Effect of Introducing Regulation for Old Platforms",`m1',"p-value (of Mea
+> sure 1)","(`p1')","Average Effect of Introducing Regulation for New Platforms",`m
+> 3',"p-value (of Measure 3)","(`p3')") adjr2 label keep(`r(X)') ctitle("Raw-Retail
+> ") sortvar(regulated P2P_RegIndex_pub_L_recip P2P_RegIndex_Adj_pub_L_recip new_pl
+> at P2P_RegIndex_newplat  P2P_RegIndex_Adj_newplat) 
+dir : seeout
+
+. 
+. 
+. reghdfe lninst_adfin_dom_plat $model2 ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =        935
+Absorbing 2 HDFE groups                           F(  17,     84) =       4.70
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.1835
+                                                  Adj R-squared   =     0.1489
+                                                  Within R-sq.    =     0.0282
+Number of clusters (Recipient_country##year) =         85Root MSE =     2.6870
+
+                   (Std. err. adjusted for 85 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lninst_adfin_d~t | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       regulated |  -.4666619   1.623148    -0.29   0.774    -3.694469    2.761145
+P2~x_pub_L_recip |   .0352661    .076494     0.46   0.646    -.1168506    .1873828
+        new_plat |  -1.849158   .8245487    -2.24   0.028    -3.488863   -.2094522
+P2P_RegIndex_n~t |    .058611   .0335917     1.74   0.085    -.0081897    .1254118
+  RL_EST_L_recip |   .9611745   .8157923     1.18   0.242    -.6611179    2.583467
+   lngdp_L_recip |   2.147077   2.286297     0.94   0.350    -2.399474    6.693629
+Time_startup_L~p |  -.0209265    .028201    -0.74   0.460    -.0770072    .0351542
+Cost_startup_L~p |  -.1185134   .0665775    -1.78   0.079      -.25091    .0138831
+Tax_income_pct~p |  -.0430188   .0378248    -1.14   0.259    -.1182375    .0321999
+GC_LegalRights~p |   .0195654   .0249025     0.79   0.434    -.0299559    .0690867
+GC_CreditInfo_~p |   -.027198   .0192611    -1.41   0.162    -.0655009    .0111048
+      RI_L_recip |   .0853257   .0368341     2.32   0.023      .012077    .1585743
+Bank_C2A_L_recip |   .1081645   .1059857     1.02   0.310    -.1025996    .3189287
+DomCredit_by_b~p |   .0459361    .022662     2.03   0.046     .0008702    .0910019
+lnBankBranch_p~p |  -3.533046   1.454038    -2.43   0.017    -6.424559    -.641533
+Bank_NPL_L_recip |   -.179306   .0682846    -2.63   0.010    -.3150976   -.0435145
+lnMobilePhoneU~p |   1.433844   2.187944     0.66   0.514    -2.917122    5.784809
+           _cons |  -59.40822   58.56686    -1.01   0.313    -175.8748     57.0584
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        17           0          17     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. local m1 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x',0.001)
+
+. local m3 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x' + _b[P2P_RegIndex_newplat]*`switcher_P2P_RegIndex',0.001)
+
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  regulated + 21.48966*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,    84) =    1.00
+            Prob > F =    0.3204
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex' + _b[P2P_
+> RegIndex_newplat]*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  regulated + 21.48966*P2P_RegIndex_pub_L_recip +
+       21.48966*P2P_RegIndex_newplat = 0
+
+       F(  1,    84) =    4.03
+            Prob > F =    0.0479
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+.  
+. est save t11CIm3,replace
+file t11CIm3.ster saved
+
+. indeplist
+Independent variables: regulated P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_new
+> plat RL_EST_L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_i
+> ncome_pct_L_recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2
+> A_L_recip DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_reci
+> p lnMobilePhoneUsage_L_recip
+
+. 
+. outreg2 t11CIm3 using regression_submission_platform_level_Table11CI, append  st(
+> coef tstat) auto(3) nonotes dta addtext("Recipient country FE & Year FE", "Yes","
+> Average Effect of Introducing Regulation for Old Platforms",`m1',"p-value (of Mea
+> sure 1)","(`p1')","Average Effect of Introducing Regulation for New Platforms",`m
+> 3',"p-value (of Measure 3)","(`p3')") adjr2 label keep(`r(X)') ctitle("Raw-Inst")
+>  sortvar(regulated P2P_RegIndex_pub_L_recip P2P_RegIndex_Adj_pub_L_recip new_plat
+>  P2P_RegIndex_newplat  P2P_RegIndex_Adj_newplat)
+dir : seeout
+
+. 
+. 
+. preserve 
+
+. 
+. replace P2P_RegIndex_pub_L_recip = P2P_RegIndex_Adj_pub_L_recip
+(746 real changes made)
+
+. replace P2P_RegIndex_newplat = P2P_RegIndex_Adj_newplat
+(210 real changes made)
+
+. 
+.                                 
+.                                 
+. reghdfe lntotal_adfin_dom_plat  $model2 ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =        935
+Absorbing 2 HDFE groups                           F(  17,     84) =       5.65
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.1744
+                                                  Adj R-squared   =     0.1394
+                                                  Within R-sq.    =     0.0331
+Number of clusters (Recipient_country##year) =         85Root MSE =     3.1888
+
+                   (Std. err. adjusted for 85 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lntotal_adfin_~t | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       regulated |  -4.170719   1.813488    -2.30   0.024    -7.777039   -.5644001
+P2~x_pub_L_recip |   .7152229    .303386     2.36   0.021     .1119066    1.318539
+        new_plat |   -6.29903   1.435124    -4.39   0.000    -9.152932   -3.445128
+P2P_RegIndex_n~t |   .9850295   .2721061     3.62   0.001     .4439166    1.526142
+  RL_EST_L_recip |   1.384656   .8697303     1.59   0.115    -.3448983     3.11421
+   lngdp_L_recip |   1.988187   2.281184     0.87   0.386    -2.548198    6.524571
+Time_startup_L~p |  -.0585031   .0270033    -2.17   0.033    -.1122022    -.004804
+Cost_startup_L~p |  -.0569988   .0529874    -1.08   0.285      -.16237    .0483724
+Tax_income_pct~p |  -.0894741   .0450349    -1.99   0.050     -.179031    .0000828
+GC_LegalRights~p |   .0169688   .0223883     0.76   0.451    -.0275529    .0614904
+GC_CreditInfo_~p |  -.0227038   .0213067    -1.07   0.290    -.0650745    .0196668
+      RI_L_recip |  -.0121812   .0299045    -0.41   0.685    -.0716495    .0472871
+Bank_C2A_L_recip |   .0828379   .1299954     0.64   0.526    -.1756722     .341348
+DomCredit_by_b~p |   .0527923   .0245344     2.15   0.034      .004003    .1015816
+lnBankBranch_p~p |  -7.144496    1.48043    -4.83   0.000    -10.08849   -4.200498
+Bank_NPL_L_recip |  -.2262479   .0791861    -2.86   0.005    -.3837182   -.0687775
+lnMobilePhoneU~p |   2.018439   1.971166     1.02   0.309    -1.901441    5.938319
+           _cons |  -38.03128   59.20786    -0.64   0.522    -155.7726    79.71005
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        17           0          17     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+.         
+. local m1 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x_Adj',0.001)
+
+. local m3 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x_Adj' + _b[P2P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj',0.001)
+
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  regulated + 5.926743*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,    84) =    0.06
+            Prob > F =    0.8100
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' + _b[
+> P2P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  regulated + 5.926743*P2P_RegIndex_pub_L_recip +
+       5.926743*P2P_RegIndex_newplat = 0
+
+       F(  1,    84) =   13.84
+            Prob > F =    0.0004
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. est save t11CIm4,replace
+file t11CIm4.ster saved
+
+. indeplist
+Independent variables: regulated P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_new
+> plat RL_EST_L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_i
+> ncome_pct_L_recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2
+> A_L_recip DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_reci
+> p lnMobilePhoneUsage_L_recip
+
+. 
+. outreg2 t11CIm4 using regression_submission_platform_level_Table11CI, append  st(
+> coef tstat) auto(3) nonotes dta addtext("Recipient country FE & Year FE", "Yes","
+> Average Effect of Introducing Regulation for Old Platforms",`m1',"p-value (of Mea
+> sure 1)","(`p1')","Average Effect of Introducing Regulation for New Platforms",`m
+> 3',"p-value (of Measure 3)","(`p3')") adjr2 label keep(`r(X)') ctitle("Adj-Total"
+> ) sortvar(regulated P2P_RegIndex_pub_L_recip P2P_RegIndex_Adj_pub_L_recip new_pla
+> t P2P_RegIndex_newplat  P2P_RegIndex_Adj_newplat) 
+dir : seeout
+
+. 
+.                 
+. reghdfe lnretail_adfin_dom_plat $model2 ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =        935
+Absorbing 2 HDFE groups                           F(  17,     84) =       5.73
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.1629
+                                                  Adj R-squared   =     0.1274
+                                                  Within R-sq.    =     0.0297
+Number of clusters (Recipient_country##year) =         85Root MSE =     3.0350
+
+                   (Std. err. adjusted for 85 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lnretail_adfin~t | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       regulated |  -3.238575   1.528811    -2.12   0.037    -6.278784   -.1983669
+P2~x_pub_L_recip |   .5464894   .2500907     2.19   0.032     .0491566    1.043822
+        new_plat |  -6.200805   1.436208    -4.32   0.000    -9.056862   -3.344748
+P2P_RegIndex_n~t |   1.022678   .2723221     3.76   0.000     .4811358     1.56422
+  RL_EST_L_recip |   1.756484   .8491739     2.07   0.042     .0678089     3.44516
+   lngdp_L_recip |   2.415107   2.007787     1.20   0.232    -1.577597    6.407811
+Time_startup_L~p |  -.0187105   .0232428    -0.81   0.423    -.0649314    .0275104
+Cost_startup_L~p |  -.0487519   .0406665    -1.20   0.234    -.1296217    .0321179
+Tax_income_pct~p |  -.0829064   .0418322    -1.98   0.051    -.1660943    .0002815
+GC_LegalRights~p |   .0119532   .0210847     0.57   0.572    -.0299761    .0538826
+GC_CreditInfo_~p |   -.007534   .0210226    -0.36   0.721    -.0493398    .0342718
+      RI_L_recip |  -.0526697   .0221562    -2.38   0.020    -.0967298   -.0086097
+Bank_C2A_L_recip |   .1315349   .1252482     1.05   0.297    -.1175349    .3806047
+DomCredit_by_b~p |   .0416903   .0209505     1.99   0.050     .0000279    .0833526
+lnBankBranch_p~p |  -6.740207   1.196514    -5.63   0.000    -9.119606   -4.360808
+Bank_NPL_L_recip |  -.2280876   .0691313    -3.30   0.001    -.3655627   -.0906124
+lnMobilePhoneU~p |   2.062769   1.977157     1.04   0.300    -1.869023    5.994562
+           _cons |  -51.01816   51.80017    -0.98   0.327    -154.0285    51.99215
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        17           0          17     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+. local m1 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x_Adj',0.001)
+
+. local m3 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x_Adj' + _b[P2P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj',0.001)
+
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  regulated + 5.926743*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,    84) =    0.00
+            Prob > F =    0.9990
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' + _b[
+> P2P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  regulated + 5.926743*P2P_RegIndex_pub_L_recip +
+       5.926743*P2P_RegIndex_newplat = 0
+
+       F(  1,    84) =   14.79
+            Prob > F =    0.0002
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. est save t11CIm5,replace
+file t11CIm5.ster saved
+
+. indeplist
+Independent variables: regulated P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_new
+> plat RL_EST_L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_i
+> ncome_pct_L_recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2
+> A_L_recip DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_reci
+> p lnMobilePhoneUsage_L_recip
+
+. 
+. outreg2 t11CIm5 using regression_submission_platform_level_Table11CI, append  st(
+> coef tstat) auto(3) nonotes dta addtext("Recipient country FE & Year FE", "Yes","
+> Average Effect of Introducing Regulation for Old Platforms",`m1',"p-value (of Mea
+> sure 1)","(`p1')","Average Effect of Introducing Regulation for New Platforms",`m
+> 3',"p-value (of Measure 3)","(`p3')") adjr2 label keep(`r(X)') ctitle("Adj-Retail
+> ") sortvar(regulated P2P_RegIndex_pub_L_recip P2P_RegIndex_Adj_pub_L_recip new_pl
+> at P2P_RegIndex_newplat  P2P_RegIndex_Adj_newplat) 
+dir : seeout
+
+. 
+. 
+. reghdfe lninst_adfin_dom_plat $model2 ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year)
+(MWFE estimator converged in 6 iterations)
+
+HDFE Linear regression                            Number of obs   =        935
+Absorbing 2 HDFE groups                           F(  17,     84) =       5.09
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.1858
+                                                  Adj R-squared   =     0.1513
+                                                  Within R-sq.    =     0.0309
+Number of clusters (Recipient_country##year) =         85Root MSE =     2.6832
+
+                   (Std. err. adjusted for 85 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+lninst_adfin_d~t | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       regulated |  -1.453308   1.581724    -0.92   0.361    -4.598739    1.692123
+P2~x_pub_L_recip |   .2891796   .2537466     1.14   0.258    -.2154234    .7937826
+        new_plat |  -3.074614   .9921481    -3.10   0.003     -5.04761   -1.101619
+P2P_RegIndex_n~t |   .4210593    .155744     2.70   0.008     .1113452    .7307734
+  RL_EST_L_recip |   .7089648    .821941     0.86   0.391     -.925555    2.343485
+   lngdp_L_recip |   1.774958   2.199459     0.81   0.422    -2.598908    6.148824
+Time_startup_L~p |  -.0236543   .0256974    -0.92   0.360    -.0747564    .0274478
+Cost_startup_L~p |  -.1403924   .0591573    -2.37   0.020    -.2580332   -.0227515
+Tax_income_pct~p |  -.0449199   .0377721    -1.19   0.238    -.1200339    .0301941
+GC_LegalRights~p |   .0146773   .0236455     0.62   0.536    -.0323444    .0616989
+GC_CreditInfo_~p |  -.0280543   .0190156    -1.48   0.144    -.0658688    .0097602
+      RI_L_recip |   .0700838   .0354317     1.98   0.051     -.000376    .1405436
+Bank_C2A_L_recip |   .1109912   .1143666     0.97   0.335    -.1164393    .3384217
+DomCredit_by_b~p |   .0438877   .0213429     2.06   0.043      .001445    .0863304
+lnBankBranch_p~p |  -4.427562   1.679394    -2.64   0.010    -7.767222   -1.087902
+Bank_NPL_L_recip |   -.202907   .0654165    -3.10   0.003    -.3329948   -.0728191
+lnMobilePhoneU~p |   1.737096   2.103673     0.83   0.411    -2.446288     5.92048
+           _cons |  -46.04435   56.55492    -0.81   0.418      -158.51    66.42131
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        17           0          17     |
+              year |         6           1           5     |
+-----------------------------------------------------------+
+
+.                                 
+. local m1 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x_Adj',0.001)
+
+. local m3 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x_Adj' + _b[P2P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj',0.001)
+
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  regulated + 5.926743*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,    84) =    0.87
+            Prob > F =    0.3536
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' + _b[
+> P2P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  regulated + 5.926743*P2P_RegIndex_pub_L_recip +
+       5.926743*P2P_RegIndex_newplat = 0
+
+       F(  1,    84) =    8.49
+            Prob > F =    0.0046
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. est save t11CIm6,replace
+file t11CIm6.ster saved
+
+. indeplist
+Independent variables: regulated P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_new
+> plat RL_EST_L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_i
+> ncome_pct_L_recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2
+> A_L_recip DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_reci
+> p lnMobilePhoneUsage_L_recip
+
+. 
+. outreg2 t11CIm6 using regression_submission_platform_level_Table11CI, append  st(
+> coef tstat) auto(3) nonotes dta addtext("Recipient country FE & Year FE", "Yes","
+> Average Effect of Introducing Regulation for Old Platforms",`m1',"p-value (of Mea
+> sure 1)","(`p1')","Average Effect of Introducing Regulation for New Platforms",`m
+> 3',"p-value (of Measure 3)","(`p3')") adjr2 label keep(`r(X)') ctitle("Adj-Inst")
+>  sortvar(regulated P2P_RegIndex_pub_L_recip P2P_RegIndex_Adj_pub_L_recip new_plat
+>  P2P_RegIndex_newplat  P2P_RegIndex_Adj_newplat) 
+dir : seeout
+
+. 
+. restore
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. ******************************
+. ******************************
+. ******************************
+. ******************************
+. ******************************
+. ******************************
+. 
+. reghdfe ln_indivfunder_numby_model $model2 ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year)
+(dropped 1 singleton observations)
+(MWFE estimator converged in 4 iterations)
+
+HDFE Linear regression                            Number of obs   =        293
+Absorbing 2 HDFE groups                           F(  17,     37) =     292.12
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.1623
+                                                  Adj R-squared   =     0.0592
+                                                  Within R-sq.    =     0.0402
+Number of clusters (Recipient_country##year) =         38Root MSE =     3.1157
+
+                   (Std. err. adjusted for 38 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+ln_indivfunder~l | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       regulated |   15.28019   14.50097     1.05   0.299    -14.10157    44.66196
+P2~x_pub_L_recip |  -.7452094   .6957647    -1.07   0.291    -2.154963    .6645438
+        new_plat |   .8366279   1.271817     0.66   0.515    -1.740317    3.413573
+P2P_RegIndex_n~t |  -.0745546   .0569081    -1.31   0.198    -.1898613    .0407522
+  RL_EST_L_recip |  -1.594498    5.84816    -0.27   0.787      -13.444      10.255
+   lngdp_L_recip |  -6.017023   14.21959    -0.42   0.675    -34.82865     22.7946
+Time_startup_L~p |   .2000804   .1207711     1.66   0.106    -.0446251    .4447859
+Cost_startup_L~p |  -.4631478   .1752998    -2.64   0.012    -.8183389   -.1079567
+Tax_income_pct~p |   .4843888    .187126     2.59   0.014     .1052355    .8635421
+GC_LegalRights~p |  -.0334375   .1474935    -0.23   0.822    -.3322877    .2654126
+GC_CreditInfo_~p |   .0238015   .1357266     0.18   0.862    -.2512068    .2988097
+      RI_L_recip |   .2551377   .2495733     1.02   0.313    -.2505458    .7608212
+Bank_C2A_L_recip |   1.016073   .6195394     1.64   0.109    -.2392332    2.271379
+DomCredit_by_b~p |  -.0675294   .2572906    -0.26   0.794    -.5888496    .4537909
+lnBankBranch_p~p |   9.349524   7.603438     1.23   0.227    -6.056504    24.75555
+Bank_NPL_L_recip |   .5038622   .6498149     0.78   0.443    -.8127878    1.820512
+lnMobilePhoneU~p |   -1.68014   3.352331    -0.50   0.619    -8.472609    5.112328
+           _cons |   115.5169   409.9761     0.28   0.780    -715.1735    946.2074
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        14           0          14     |
+              year |         3           1           2     |
+-----------------------------------------------------------+
+
+. 
+. local m1 = round(_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex',0.001)
+
+. local m3 = round(_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex' + _b[P2P_Re
+> gIndex_newplat]*`switcher_P2P_RegIndex',0.001)
+
+. test _b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  21.48966*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,    37) =    1.15
+            Prob > F =    0.2911
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. test _b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex' + _b[P2P_RegIndex_newpl
+> at]*`switcher_P2P_RegIndex' = 0
+
+ ( 1)  21.48966*P2P_RegIndex_pub_L_recip + 21.48966*P2P_RegIndex_newplat = 0
+
+       F(  1,    37) =    1.39
+            Prob > F =    0.2466
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+.  
+. est save t11CIIm1,replace
+file t11CIIm1.ster saved
+
+. indeplist
+Independent variables: regulated P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_new
+> plat RL_EST_L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_i
+> ncome_pct_L_recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2
+> A_L_recip DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_reci
+> p lnMobilePhoneUsage_L_recip
+
+. 
+. outreg2 t11CIIm1 using regression_submission_platform_level_Table11CII, replace  
+> st(coef tstat) auto(3) nonotes dta addtext("Recipient country FE & Year FE", "Yes
+> ","Average Effect of Introducing Regulation for Old Platforms",`m1',"p-value (of 
+> Measure 1)","(`p1')","Average Effect of Introducing Regulation for New Platforms"
+> ,`m3',"p-value (of Measure 3)","(`p3')") adjr2 label keep(`r(X)') ctitle("Raw-ln(
+> funder)") sortvar(regulated P2P_RegIndex_pub_L_recip P2P_RegIndex_Adj_pub_L_recip
+>  new_plat P2P_RegIndex_newplat  P2P_RegIndex_Adj_newplat) title("Table 11 Panel C
+>  Part II.2: This table reports the estimation results based on the PSM-matched sa
+> mples and investigates the effect of regulatory clarity on the domestic debt volu
+> me generated on old and new platforms, respectively. The independent variable, Ne
+> w Platform Indicators, equals one if the platform enters the market at least in y
+> ear after the publication of the explicit regulation. The variable, Regulated, in
+> dicates whether the jurisdication has introduced a regulation. All independent va
+> riables are described in the Appendix and are lagged by a year. All regressions i
+> nclude country and year fixed effects. Heteroscedasticity-consistent robust stand
+> ard errors are clustered by country and year, following Thompson (2011). *** p<0.
+> 01, ** p<0.05, * p<0.1")
+dir : seeout
+
+. 
+. 
+. preserve 
+
+. 
+. replace P2P_RegIndex_pub_L_recip = P2P_RegIndex_Adj_pub_L_recip
+(746 real changes made)
+
+. replace P2P_RegIndex_newplat = P2P_RegIndex_Adj_newplat
+(210 real changes made)
+
+. 
+. 
+. 
+. reghdfe ln_indivfunder_numby_model $model2 ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year)
+(dropped 1 singleton observations)
+(MWFE estimator converged in 4 iterations)
+
+HDFE Linear regression                            Number of obs   =        293
+Absorbing 2 HDFE groups                           F(  17,     37) =     241.77
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.1619
+                                                  Adj R-squared   =     0.0587
+                                                  Within R-sq.    =     0.0397
+Number of clusters (Recipient_country##year) =         38Root MSE =     3.1165
+
+                   (Std. err. adjusted for 38 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+ln_indivfunder~l | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       regulated |  -15.19547   13.48929    -1.13   0.267    -42.52737    12.13643
+P2~x_pub_L_recip |   2.402018   2.170051     1.11   0.275    -1.994924     6.79896
+        new_plat |  -1.442485   1.592396    -0.91   0.371    -4.668987    1.784016
+P2P_RegIndex_n~t |   .1367514   .2869198     0.48   0.636    -.4446034    .7181062
+  RL_EST_L_recip |  -1.473714   5.856992    -0.25   0.803    -13.34111    10.39368
+   lngdp_L_recip |  -6.274696    14.2375    -0.44   0.662    -35.12261    22.57322
+Time_startup_L~p |   .2118077   .1211402     1.75   0.089    -.0336456     .457261
+Cost_startup_L~p |  -.4656165   .1755272    -2.65   0.012    -.8212685   -.1099646
+Tax_income_pct~p |    .485937   .1874826     2.59   0.014     .1060613    .8658128
+GC_LegalRights~p |  -.0299069    .147092    -0.20   0.840    -.3279437    .2681298
+GC_CreditInfo_~p |   .0267546   .1359185     0.20   0.845    -.2486423    .3021516
+      RI_L_recip |   .2622032   .2497578     1.05   0.301    -.2438542    .7682606
+Bank_C2A_L_recip |   1.007738   .6196954     1.63   0.112    -.2478843     2.26336
+DomCredit_by_b~p |  -.0725874   .2579401    -0.28   0.780    -.5952238    .4500489
+lnBankBranch_p~p |   9.424319   7.606106     1.24   0.223    -5.987115    24.83575
+Bank_NPL_L_recip |   .4841577   .6498534     0.75   0.461    -.8325704    1.800886
+lnMobilePhoneU~p |  -1.588078    3.35206    -0.47   0.638    -8.379997     5.20384
+           _cons |    122.315   410.8467     0.30   0.768    -710.1395    954.7694
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        14           0          14     |
+              year |         3           1           2     |
+-----------------------------------------------------------+
+
+. local m1 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x_Adj',0.001)
+
+. local m3 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x_Adj' + _b[P2P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj',0.001)
+
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  regulated + 5.926743*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,    37) =    1.19
+            Prob > F =    0.2825
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' + _b[
+> P2P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  regulated + 5.926743*P2P_RegIndex_pub_L_recip +
+       5.926743*P2P_RegIndex_newplat = 0
+
+       F(  1,    37) =    0.01
+            Prob > F =    0.9367
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. est save t11CIIm2,replace
+file t11CIIm2.ster saved
+
+. indeplist
+Independent variables: regulated P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_new
+> plat RL_EST_L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_i
+> ncome_pct_L_recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2
+> A_L_recip DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_reci
+> p lnMobilePhoneUsage_L_recip
+
+. 
+. outreg2 t11CIIm2 using regression_submission_platform_level_Table11CII, append  s
+> t(coef tstat) auto(3) nonotes dta addtext("Recipient country FE & Year FE", "Yes"
+> ,"Average Effect of Introducing Regulation for Old Platforms",`m1',"p-value (of M
+> easure 1)","(`p1')","Average Effect of Introducing Regulation for New Platforms",
+> `m3',"p-value (of Measure 3)","(`p3')") adjr2 label keep(`r(X)') ctitle("Adj-ln(f
+> under)") sortvar(regulated P2P_RegIndex_pub_L_recip P2P_RegIndex_Adj_pub_L_recip 
+> new_plat P2P_RegIndex_newplat  P2P_RegIndex_Adj_newplat) 
+dir : seeout
+
+. 
+. 
+. 
+. restore
+
+. 
+. 
+.                                 
+. reghdfe ln_fundraiser_numby_model $model2 ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year)
+(dropped 2 singleton observations)
+(MWFE estimator converged in 5 iterations)
+
+HDFE Linear regression                            Number of obs   =        521
+Absorbing 2 HDFE groups                           F(  17,     52) =     103.95
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.2073
+                                                  Adj R-squared   =     0.1519
+                                                  Within R-sq.    =     0.0546
+Number of clusters (Recipient_country##year) =         53Root MSE =     2.7002
+
+                   (Std. err. adjusted for 53 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+ln_fundraiser_~l | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       regulated |   1.143351   1.299032     0.88   0.383    -1.463347     3.75005
+P2~x_pub_L_recip |   -.033216   .0572551    -0.58   0.564    -.1481068    .0816749
+        new_plat |  -5.572784   1.352331    -4.12   0.000    -8.286435   -2.859133
+P2P_RegIndex_n~t |   .2355108   .0630025     3.74   0.000     .1090869    .3619346
+  RL_EST_L_recip |   .0560105   1.240279     0.05   0.964    -2.432791    2.544812
+   lngdp_L_recip |   1.326894   2.639545     0.50   0.617    -3.969741    6.623529
+Time_startup_L~p |   .0527084   .0403353     1.31   0.197    -.0282303    .1336471
+Cost_startup_L~p |    .077385   .0502779     1.54   0.130    -.0235051     .178275
+Tax_income_pct~p |  -.0389339   .0319773    -1.22   0.229     -.103101    .0252332
+GC_LegalRights~p |   .1129585   .0443983     2.54   0.014     .0238667    .2020503
+GC_CreditInfo_~p |   .1063838   .0282126     3.77   0.000     .0497711    .1629964
+      RI_L_recip |   .1509732    .059971     2.52   0.015     .0306326    .2713139
+Bank_C2A_L_recip |   .3310532   .0870861     3.80   0.000     .1563022    .5058041
+DomCredit_by_b~p |   .0314092    .031239     1.01   0.319    -.0312764    .0940948
+lnBankBranch_p~p |  -3.969935   .7371548    -5.39   0.000    -5.449144   -2.490725
+Bank_NPL_L_recip |  -.0203869   .0814827    -0.25   0.803    -.1838939    .1431201
+lnMobilePhoneU~p |   3.675764   1.194094     3.08   0.003     1.279638     6.07189
+           _cons |  -67.94638   68.97345    -0.99   0.329    -206.3517    70.45896
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        15           0          15     |
+              year |         4           1           3     |
+-----------------------------------------------------------+
+
+.                                 
+. local m1 = round(_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj',0.001)
+
+. local m3 = round(_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' + _b[P2
+> P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj',0.001)
+
+. test _b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  5.926743*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,    52) =    0.34
+            Prob > F =    0.5643
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. test _b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' + _b[P2P_RegIndex_n
+> ewplat]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  5.926743*P2P_RegIndex_pub_L_recip + 5.926743*P2P_RegIndex_newplat = 0
+
+       F(  1,    52) =    6.13
+            Prob > F =    0.0166
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+.  
+. est save t11CIIIm1,replace
+file t11CIIIm1.ster saved
+
+. indeplist
+Independent variables: regulated P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_new
+> plat RL_EST_L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_i
+> ncome_pct_L_recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2
+> A_L_recip DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_reci
+> p lnMobilePhoneUsage_L_recip
+
+. 
+. outreg2 t11CIIIm1 using regression_submission_platform_level_Table11CIII, replace
+>   st(coef tstat) auto(3) nonotes dta addtext("Recipient country FE & Year FE", "Y
+> es","Average Effect of Introducing Regulation for Old Platforms",`m1',"p-value (o
+> f Measure 1)","(`p1')","Average Effect of Introducing Regulation for New Platform
+> s",`m3',"p-value (of Measure 3)","(`p3')") adjr2 label keep(`r(X)') ctitle("Raw-l
+> n(funder)") sortvar(regulated P2P_RegIndex_pub_L_recip P2P_RegIndex_Adj_pub_L_rec
+> ip new_plat P2P_RegIndex_newplat  P2P_RegIndex_Adj_newplat) title("Table 11 Panel
+>  C Part II.3: This table reports the estimation results based on the PSM-matched 
+> samples and investigates the effect of regulatory clarity on the domestic debt vo
+> lume generated on old and new platforms, respectively. The independent variable, 
+> New Platform Indicators, equals one if the platform enters the market at least in
+>  year after the publication of the explicit regulation. The variable, Regulated, 
+> indicates whether the jurisdication has introduced a regulation. All independent 
+> variables are described in the Appendix and are lagged by a year. All regressions
+>  include country and year fixed effects. Heteroscedasticity-consistent robust sta
+> ndard errors are clustered by country and year, following Thompson (2011). *** p<
+> 0.01, ** p<0.05, * p<0.1")
+dir : seeout
+
+. 
+. 
+. 
+. preserve 
+
+. 
+. replace P2P_RegIndex_pub_L_recip = P2P_RegIndex_Adj_pub_L_recip
+(746 real changes made)
+
+. replace P2P_RegIndex_newplat = P2P_RegIndex_Adj_newplat
+(210 real changes made)
+
+. 
+. 
+.                                 
+. reghdfe ln_fundraiser_numby_model $model2 ///
+>                             if year >= 2015 , a(i.Recipient_country i.year) vce(c
+> luster i.Recipient_country##i.year)
+(dropped 2 singleton observations)
+(MWFE estimator converged in 5 iterations)
+
+HDFE Linear regression                            Number of obs   =        521
+Absorbing 2 HDFE groups                           F(  17,     52) =     109.77
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.2127
+                                                  Adj R-squared   =     0.1577
+                                                  Within R-sq.    =     0.0611
+Number of clusters (Recipient_country##year) =         53Root MSE =     2.6910
+
+                   (Std. err. adjusted for 53 clusters in Recipient_country##year)
+----------------------------------------------------------------------------------
+                 |               Robust
+ln_fundraiser_~l | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-----------------+----------------------------------------------------------------
+       regulated |   1.642046   1.207637     1.36   0.180    -.7812561    4.065348
+P2~x_pub_L_recip |  -.2009177   .1727055    -1.16   0.250    -.5474768    .1456413
+        new_plat |  -6.021221   1.142938    -5.27   0.000    -8.314693   -3.727749
+P2P_RegIndex_n~t |   .9112056   .1941173     4.69   0.000     .5216808     1.30073
+  RL_EST_L_recip |  -.0105128   1.391974    -0.01   0.994    -2.803714    2.782688
+   lngdp_L_recip |   1.422226   2.518121     0.56   0.575    -3.630753    6.475205
+Time_startup_L~p |   .0539422   .0400662     1.35   0.184    -.0264565    .1343409
+Cost_startup_L~p |   .0468064   .0493978     0.95   0.348    -.0523175    .1459303
+Tax_income_pct~p |  -.0333459   .0324174    -1.03   0.308    -.0983962    .0317043
+GC_LegalRights~p |   .0958362   .0419246     2.29   0.026     .0117084     .179964
+GC_CreditInfo_~p |   .1047684   .0281328     3.72   0.000     .0483158    .1612211
+      RI_L_recip |   .1525858   .0621276     2.46   0.017     .0279176    .2772539
+Bank_C2A_L_recip |   .3433068   .0827372     4.15   0.000     .1772825    .5093311
+DomCredit_by_b~p |   .0304733   .0315887     0.96   0.339     -.032914    .0938606
+lnBankBranch_p~p |  -3.991206   .7367219    -5.42   0.000    -5.469547   -2.512866
+Bank_NPL_L_recip |  -.0480152   .0757463    -0.63   0.529    -.2000113    .1039808
+lnMobilePhoneU~p |   3.866655   1.194463     3.24   0.002     1.469789     6.26352
+           _cons |  -70.15712   65.78455    -1.07   0.291    -202.1635    61.84924
+----------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------------+
+       Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------------+---------------------------------------|
+ Recipient_country |        15           0          15     |
+              year |         4           1           3     |
+-----------------------------------------------------------+
+
+. local m1 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x_Adj',0.001)
+
+. local m3 = round(_b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegInde
+> x_Adj' + _b[P2P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj',0.001)
+
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  regulated + 5.926743*P2P_RegIndex_pub_L_recip = 0
+
+       F(  1,    52) =    3.57
+            Prob > F =    0.0642
+
+. local p1 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. test _b[regulated]+_b[P2P_RegIndex_pub_L_recip]*`switcher_P2P_RegIndex_Adj' + _b[
+> P2P_RegIndex_newplat]*`switcher_P2P_RegIndex_Adj' = 0
+
+ ( 1)  regulated + 5.926743*P2P_RegIndex_pub_L_recip +
+       5.926743*P2P_RegIndex_newplat = 0
+
+       F(  1,    52) =   27.06
+            Prob > F =    0.0000
+
+. local p3 = cond(r(p)<0.001,"P<0.001", "P=`:di %5.3f `=`r(p)'''"  )
+
+. 
+. est save t11CIIIm2,replace
+file t11CIIIm2.ster saved
+
+. indeplist
+Independent variables: regulated P2P_RegIndex_pub_L_recip new_plat P2P_RegIndex_new
+> plat RL_EST_L_recip lngdp_L_recip Time_startup_L_recip Cost_startup_L_recip Tax_i
+> ncome_pct_L_recip GC_LegalRights_L_recip GC_CreditInfo_L_recip RI_L_recip Bank_C2
+> A_L_recip DomCredit_by_banks_L_recip lnBankBranch_per100k_L_recip Bank_NPL_L_reci
+> p lnMobilePhoneUsage_L_recip
+
+. 
+. outreg2 t11CIIIm2 using regression_submission_platform_level_Table11CIII, append 
+>  st(coef tstat) auto(3) nonotes dta addtext("Recipient country FE & Year FE", "Ye
+> s","Average Effect of Introducing Regulation for Old Platforms",`m1',"p-value (of
+>  Measure 1)","(`p1')","Average Effect of Introducing Regulation for New Platforms
+> ",`m3',"p-value (of Measure 3)","(`p3')") adjr2 label keep(`r(X)') ctitle("Adj-ln
+> (fundraiser)") sortvar(regulated P2P_RegIndex_pub_L_recip P2P_RegIndex_Adj_pub_L_
+> recip new_plat P2P_RegIndex_newplat  P2P_RegIndex_Adj_newplat) 
+dir : seeout
+
+. 
+. 
+. 
+. restore
+
+. 
+. 
+. 
+. 
+.                                 
+. 
+. 
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_p
+> ackage"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. use "regression_submission_platform_level_Table8A_dta", clear 
+
+. export excel using "regression_results_submission_platform_level.xlsx", sheet("Ta
+> ble8",replace) 
+file regression_results_submission_platform_level.xlsx saved
+
+. 
+. use "regression_submission_platform_level_Table11CI_dta", clear 
+
+. export excel using "regression_results_submission_platform_level.xlsx", sheet("Ta
+> ble11.C.II.1",replace) 
+file regression_results_submission_platform_level.xlsx saved
+
+. 
+. use "regression_submission_platform_level_Table11CII_dta", clear 
+
+. export excel using "regression_results_submission_platform_level.xlsx", sheet("Ta
+> ble11.C.II.2",replace) 
+file regression_results_submission_platform_level.xlsx saved
+
+. 
+. use "regression_submission_platform_level_Table11CIII_dta", clear 
+
+. export excel using "regression_results_submission_platform_level.xlsx", sheet("Ta
+> ble11.C.II.3",replace) 
+file regression_results_submission_platform_level.xlsx saved
+
+. 
+. 
+end of do-file
+
+. log close
+      name:  <unnamed>
+       log:  C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replic
+> ation_package\platform_level_regression.log
+  log type:  text
+ closed on:  17 Nov 2024, 09:59:12
+-----------------------------------------------------------------------------------

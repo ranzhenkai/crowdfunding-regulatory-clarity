@@ -1,0 +1,2190 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package\summary_statistics.log
+  log type:  text
+ opened on:  21 Nov 2024, 15:04:10
+
+. do "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package\ms_code_submission_regression_tables_sum_stats.do"
+
+. *************************************************************
+. *****************Summary Statistics**************************
+. *************************************************************
+. *This do file is aimed to provide a set of tables on summary statistics as presented in Figure 1, Table 2, and Table 4
+. ********************************************************
+. 
+. 
+. ********************************************************
+. ********Table 2 + Figure 1 *****************************
+. ********************************************************
+. ********************************************************
+. ********************************************************
+. 
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. use crowdfunding_platform_level_2015_2020_keep_microfinance.dta,clear
+
+. 
+. ********************************************************
+. *Platform is uniquely identified by "CompanyID"
+. ********************************************************
+. 
+. label var CCAFCountry "Country"
+
+. 
+. drop if year < 2015
+(2,437,736 observations deleted)
+
+. 
+. keep CCAFCountry year CompanyID *_plat Intl_market *Region_recip DevMktInd_recip *law_recip
+
+. 
+. **Number of domestic vs international platforms by year and by recipient country, distinguished by investor type (retail and institutional)
+. ********************************************************
+. 
+. *************Both international and domestic
+. *both P2P and ECF and both retail and institutional
+. cap drop num_plat_both_total_all
+
+. bys CCAFCountry year: egen num_plat_both_total_all = nvals(CompanyID)  if total_vol_plat != .  & total_vol_plat != 0  & Intl_market != . 
+(3,646,987 missing values generated)
+
+. label var num_plat_both_total_all "# of platforms"
+
+. bys CCAFCountry year (num_plat_both_total_all): replace num_plat_both_total_all= num_plat_both_total_all[1] 
+(2841448 real changes made)
+
+. replace num_plat_both_total_all = 0 if num_plat_both_total_all == .
+(805,539 real changes made)
+
+. 
+. cap drop vol_both_total_all
+
+. bys CCAFCountry year: egen vol_both_total_all = sum(total_vol_plat)  if total_vol_plat != .  & total_vol_plat != 0  & Intl_market != . 
+(3,646,987 missing values generated)
+
+. label var vol_both_total_all "aggregate crowdfunding volume"
+
+. bys CCAFCountry year (vol_both_total_all): replace vol_both_total_all= vol_both_total_all[1] 
+(2841448 real changes made)
+
+. replace vol_both_total_all = 0 if vol_both_total_all == .
+(805,539 real changes made)
+
+. 
+. *Retail
+. cap drop vol_both_retail_all
+
+. bys CCAFCountry year: egen vol_both_retail_all = sum(retail_vol_plat)  if retail_vol_plat != .  & retail_vol_plat != 0  & Intl_market != . 
+(3,647,373 missing values generated)
+
+. label var vol_both_retail_all "retail crowdfunding volume"
+
+. bys CCAFCountry year (vol_both_retail_all): replace vol_both_retail_all= vol_both_retail_all[1] 
+(2835800 real changes made)
+
+. replace vol_both_retail_all = 0 if vol_both_retail_all == .
+(811,573 real changes made)
+
+. 
+. gen ratio_both_retail_all = vol_both_retail_all/vol_both_total_all
+(805,539 missing values generated)
+
+. label var ratio_both_retail_all "ratio of retail vol. over aggregate vol."
+
+. 
+. *Institutional
+. cap drop vol_both_inst_all
+
+. bys CCAFCountry year: egen vol_both_inst_all = sum(inst_vol_plat)  if inst_vol_plat != .  & inst_vol_plat != 0  & Intl_market != . 
+(3,654,156 missing values generated)
+
+. label var vol_both_inst_all "institutional crowdfunding volume"
+
+. bys CCAFCountry year (vol_both_inst_all): replace vol_both_inst_all= vol_both_inst_all[1] 
+(1493984 real changes made)
+
+. replace vol_both_inst_all = 0 if vol_both_inst_all == .
+(2,160,172 real changes made)
+
+. 
+. gen ratio_both_inst_all = vol_both_inst_all/vol_both_total_all
+(805,539 missing values generated)
+
+. label var ratio_both_inst_all "ratio of institutional vol. over aggregate vol."
+
+. 
+. *********************International
+. *both P2P and ECF and both retail and institutional
+. cap drop vol_int_total_all
+
+. bys CCAFCountry year: egen vol_int_total_all = sum(total_vol_plat)  if total_vol_plat != .  & total_vol_plat != 0  & Intl_market == 1
+(3,652,663 missing values generated)
+
+. label var vol_int_total_all "international crowdfunding volume"
+
+. bys CCAFCountry year (vol_int_total_all): replace vol_int_total_all= vol_int_total_all[1]
+(2816954 real changes made)
+
+. replace vol_int_total_all = 0 if vol_int_total_all == .
+(835,709 real changes made)
+
+. 
+. gen ratio_int_total_all = vol_int_total_all/vol_both_total_all
+(805,539 missing values generated)
+
+. label var ratio_int_total_all "ratio of international vol. over aggregate vol."
+
+. 
+. **************Domestic 
+. *both P2P and ECF and both retail and institutional
+. cap drop vol_dom_total_all
+
+. bys CCAFCountry year: egen vol_dom_total_all = sum(total_vol_plat)  if total_vol_plat != .  & total_vol_plat != 0  & Intl_market == 0
+(3,650,928 missing values generated)
+
+. label var vol_dom_total_all "domestic crowdfunding volume"
+
+. bys CCAFCountry year (vol_dom_total_all): replace vol_dom_total_all= vol_dom_total_all[1]
+(1294651 real changes made)
+
+. replace vol_dom_total_all = 0 if vol_dom_total_all == .
+(2,356,277 real changes made)
+
+. 
+. gen ratio_dom_total_all = vol_dom_total_all/vol_both_total_all
+(805,539 missing values generated)
+
+. label var ratio_dom_total_all "ratio of domestic vol. over aggregate vol."
+
+. 
+. **********distinguished by business models (P2P, ECF)
+. *ECF
+. cap drop vol_both_total_afeq
+
+. bys CCAFCountry year: egen vol_both_total_afeq = sum(total_afeq_plat)  if total_afeq_plat != .  & total_afeq_plat != 0  & Intl_market != .
+(3,655,246 missing values generated)
+
+. label var vol_both_total_afeq "ECF volume"
+
+. bys CCAFCountry year (vol_both_total_afeq): replace vol_both_total_afeq= vol_both_total_afeq[1]
+(936929 real changes made)
+
+. replace vol_both_total_afeq = 0 if vol_both_total_afeq == .
+(2,718,317 real changes made)
+
+. 
+. gen ratio_both_total_afeq = vol_both_total_afeq/vol_both_total_all
+(805,539 missing values generated)
+
+. label var ratio_both_total_afeq "ratio of ECF vol. over aggregate vol."
+
+. 
+. *P2P
+. cap drop vol_both_total_afdebt
+
+. bys CCAFCountry year: egen vol_both_total_afdebt = sum(total_afdebt_plat)  if total_afdebt_plat != .  & total_afdebt_plat != 0  & Intl_market != .
+(3,651,464 missing values generated)
+
+. label var vol_both_total_afdebt "P2P volume"
+
+. bys CCAFCountry year (vol_both_total_afdebt): replace vol_both_total_afdebt= vol_both_total_afdebt[1]
+(1747737 real changes made)
+
+. replace vol_both_total_afdebt = 0 if vol_both_total_afdebt == .
+(1,903,727 real changes made)
+
+. 
+. gen ratio_both_total_afdebt = vol_both_total_afdebt/vol_both_total_all
+(805,539 missing values generated)
+
+. label var ratio_both_total_afdebt "ratio of P2P vol. over aggregate vol."
+
+. 
+. keep *Region_recip CCAFCountry year num_plat* vol* ratio* *law_recip DevMktInd_recip
+
+. 
+. order *Region_recip CCAFCountry year num_plat*  vol* ratio* *law_recip DevMktInd_recip
+
+. 
+. sort *Region_recip CCAFCountry year num_plat* vol* ratio* *law_recip DevMktInd_recip
+
+. 
+. 
+. foreach i of varlist vol* {
+  2. replace `i' = `i'/1000000
+  3. }
+(2,851,065 real changes made)
+(2,845,031 real changes made)
+(1,496,432 real changes made)
+(2,820,895 real changes made)
+(1,300,327 real changes made)
+(938,287 real changes made)
+(1,752,877 real changes made)
+
+. 
+. 
+. bys CCAFCountry year : keep if _n == _N
+(3,655,392 observations deleted)
+
+. 
+. compress
+  variable num_plat_both_total_all was float now int
+  variable year was double now int
+  variable islamic_law_recip was double now byte
+  variable civil_law_recip was double now byte
+  variable common_law_recip was double now byte
+  variable DevMktInd_recip was double now byte
+  (43,632 bytes saved)
+
+. 
+. ren CCAFCountry recipient_country
+
+. merge 1:1 year recipient_country using control_variables.dta, keepusing(GDPperCapita)
+(variable recipient_country was str32, now str52 to accommodate using data's values)
+(variable year was int, now double to accommodate using data's values)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           202
+        from master                         0  (_merge==1)
+        from using                        202  (_merge==2)
+
+    Matched                             1,212  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge == 2
+(202 observations deleted)
+
+. drop _merge
+
+. 
+. ren recipient_country CCAFCountry
+
+. label var GDPperCapita "GDP per capita in $"
+
+. 
+. *aggregate vol. over GDP per capita
+. gen ratio_both_total_all_gdpcapita = 1000000*vol_both_total_all/GDPperCapita
+(54 missing values generated)
+
+. label var ratio_both_total_all_gdpcapita "ratio of aggregate vol. to GDP per capita"
+
+. 
+. preserve 
+
+. keep SubRegion_recip MajorRegion_recip CCAFCountry year num_plat_both_total_all ratio_both_total_all_gdpcapita 
+
+. 
+. collapse (mean) num_plat_both_total_all ratio_both_total_all_gdpcapita, by(CCAFCountry)
+
+. 
+. list 
+
+     +--------------------------------------------------------+
+     |                      CCAFCountry   num_pl~l   ratio_~a |
+     |--------------------------------------------------------|
+  1. |                      Afghanistan   .8333333   65.14202 |
+  2. |                          Albania   2.666667   5004.077 |
+  3. |                          Algeria   1.666667   476.2815 |
+  4. |                          Andorra   .3333333   .0196765 |
+  5. |                           Angola         .5   2.136162 |
+     |--------------------------------------------------------|
+  6. |                         Anguilla   .3333333   .0078315 |
+  7. |              Antigua and Barbuda   .1666667   .5352245 |
+  8. |                        Argentina   10.33333    4788.92 |
+  9. |                          Armenia   2.833333   29419.33 |
+ 10. |                        Australia   30.16667   17363.17 |
+     |--------------------------------------------------------|
+ 11. |                          Austria       14.5   675.1191 |
+ 12. |                       Azerbaijan   .1666667    .078132 |
+ 13. |                     Bahamas, The         .5   .1366583 |
+ 14. |                          Bahrain   .3333333   .0691068 |
+ 15. |                       Bangladesh   2.333333     1082.7 |
+     |--------------------------------------------------------|
+ 16. |                         Barbados   .8333333   .4517184 |
+ 17. |                          Belarus   2.166667   493.6166 |
+ 18. |                          Belgium   11.66667   1520.853 |
+ 19. |                           Belize   2.166667   4.475949 |
+ 20. |                            Benin        1.5   19.89239 |
+     |--------------------------------------------------------|
+ 21. |                          Bermuda   .6666667   .0379287 |
+ 22. |                           Bhutan         .5    .555832 |
+ 23. |                          Bolivia   2.666667   924.1676 |
+ 24. |             Bosnia & Herzegovina   2.833333   27.81442 |
+ 25. |                         Botswana   2.166667   1876.289 |
+     |--------------------------------------------------------|
+ 26. |                           Brazil   29.33333   162740.2 |
+ 27. |                           Brunei   .1666667   3.426094 |
+ 28. |                         Bulgaria   6.333333   3026.466 |
+ 29. |                     Burkina Faso   2.833333   1709.248 |
+ 30. |                          Burundi   1.166667   863.6642 |
+     |--------------------------------------------------------|
+ 31. |                       Cabo Verde         .5   .5983257 |
+ 32. |                         Cambodia   5.666667   3689.053 |
+ 33. |                         Cameroon          5   2665.837 |
+ 34. |                           Canada   23.33333   11039.84 |
+ 35. |                   Cayman Islands   .1666667    .129065 |
+     |--------------------------------------------------------|
+ 36. |         Central African Republic   .6666667   5.074207 |
+ 37. |                             Chad   .6666667   1.830251 |
+ 38. |                            Chile       11.5   22189.13 |
+ 39. |                            China      356.5   1.87e+07 |
+ 40. |                         Colombia   18.16667   29320.67 |
+     |--------------------------------------------------------|
+ 41. |                          Comoros          0          0 |
+ 42. |                  Congo Dem. Rep.   3.166667   7064.658 |
+ 43. |                       Congo Rep.          1   17.10083 |
+ 44. |                       Costa Rica          4   404.1736 |
+ 45. |                    Cote d'Ivoire        2.5   34008.49 |
+     |--------------------------------------------------------|
+ 46. |                          Croatia   5.666667   69.64177 |
+ 47. |                             Cuba   1.333333   9.991521 |
+ 48. |                          Curacao         .5   123.5528 |
+ 49. |                           Cyprus        2.5   512.5327 |
+ 50. |                   Czech Republic   9.166667   2684.724 |
+     |--------------------------------------------------------|
+ 51. |                          Denmark   12.16667   1515.163 |
+ 52. |                         Dominica   .3333333   .1775028 |
+ 53. |               Dominican Republic   2.333333   63.26482 |
+ 54. |                          Ecuador        5.5   1133.807 |
+ 55. |                            Egypt   5.166667   1740.366 |
+     |--------------------------------------------------------|
+ 56. |                      El Salvador   1.666667   1003.804 |
+ 57. |                Equatorial Guinea          0          0 |
+ 58. |                          Eritrea   .1666667          . |
+ 59. |                          Estonia   11.83333   5354.772 |
+ 60. |                         Ethiopia   2.333333   359.8231 |
+     |--------------------------------------------------------|
+ 61. |                 Falkland Islands   .1666667   .0008214 |
+ 62. |                    Faroe Islands   .8333333   11.95733 |
+ 63. |                             Fiji   .8333333   62.63374 |
+ 64. |                          Finland   14.83333   5832.866 |
+ 65. |                           France       41.5   23534.08 |
+     |--------------------------------------------------------|
+ 66. |                            Gabon   .1666667    .000474 |
+ 67. |                           Gambia        1.5   16.22568 |
+ 68. |                          Georgia   4.833333   21716.85 |
+ 69. |                          Germany   40.66667   19860.48 |
+ 70. |                            Ghana   6.666667   83678.79 |
+     |--------------------------------------------------------|
+ 71. |                        Gibraltar   .1666667          . |
+ 72. |                           Greece   6.666667   104.2082 |
+ 73. |                        Greenland   .8333333   .1374884 |
+ 74. |                       Guadeloupe   .1666667   .0066025 |
+ 75. |                        Guatemala   5.166667   3209.494 |
+     |--------------------------------------------------------|
+ 76. |                         Guernsey   .1666667    43.0303 |
+ 77. |                           Guinea   1.166667   15.41026 |
+ 78. |                    Guinea-Bissau   .1666667   .1263177 |
+ 79. |                            Haiti   2.166667   589.8311 |
+ 80. |                         Honduras          3   948.8853 |
+     |--------------------------------------------------------|
+ 81. |                        Hong Kong   7.666667   2832.729 |
+ 82. |                          Hungary   4.666667   30.51201 |
+ 83. |                          Iceland   3.166667    34.0589 |
+ 84. |                            India   37.33333   466660.6 |
+ 85. |                        Indonesia   24.16667   340705.2 |
+     |--------------------------------------------------------|
+ 86. |                             Iran   2.833333   35.08912 |
+ 87. |                             Iraq   2.333333   15.02711 |
+ 88. |                          Ireland   6.833333   927.9188 |
+ 89. |                      Isle of Man   .1666667   21.83642 |
+ 90. |                           Israel   9.333333   9746.324 |
+     |--------------------------------------------------------|
+ 91. |                            Italy   36.33333   34002.21 |
+ 92. |                          Jamaica   1.333333   5.097197 |
+ 93. |                            Japan   11.83333   16574.57 |
+ 94. |                           Jersey   .1666667   291.4957 |
+ 95. |                           Jordan   4.166667    1183.07 |
+     |--------------------------------------------------------|
+ 96. |                       Kazakhstan          3    9557.65 |
+ 97. |                            Kenya   13.83333   23335.12 |
+ 98. |                           Kosovo   1.833333   2220.366 |
+ 99. |                           Kuwait          1    3.40354 |
+100. |                       Kyrgyzstan   1.333333   1235.825 |
+     |--------------------------------------------------------|
+101. | Lao People's Democratic Republic   .8333333   25.20443 |
+102. |                           Latvia          9   9659.274 |
+103. |                          Lebanon   4.833333   892.8314 |
+104. |                          Lesotho   2.666667   184.6641 |
+105. |                          Liberia   2.166667   1025.785 |
+     |--------------------------------------------------------|
+106. |                    Liechtenstein   .3333333   .1553986 |
+107. |                        Lithuania   10.83333   5789.322 |
+108. |                       Luxembourg   2.833333   51.72431 |
+109. |                            Macao   .3333333   .0648947 |
+110. |                        Macedonia   2.833333   1659.431 |
+     |--------------------------------------------------------|
+111. |                       Madagascar   2.666667   1796.142 |
+112. |                           Malawi   4.666667   3105.108 |
+113. |                         Malaysia       15.5   5205.948 |
+114. |                         Maldives   .1666667    .012862 |
+115. |                             Mali   3.666667    1967.37 |
+     |--------------------------------------------------------|
+116. |                            Malta        3.5   12.89525 |
+117. |                       Mauritania         .5   19.89255 |
+118. |                        Mauritius          3   571.6851 |
+119. |                           Mexico   34.16667   30588.05 |
+120. |                          Moldova   2.166667   12451.87 |
+     |--------------------------------------------------------|
+121. |                           Monaco          1   15.55717 |
+122. |                         Mongolia   3.166667    1573.16 |
+123. |                       Montenegro         .5   .7419018 |
+124. |                          Morocco   4.333333   69.76185 |
+125. |                       Mozambique          3   1205.406 |
+     |--------------------------------------------------------|
+126. |                  Myanmar (Burma)        2.5   795.5388 |
+127. |                          Namibia   3.166667    438.437 |
+128. |                            Nepal        3.5   299.3254 |
+129. |                      Netherlands       28.5   18903.95 |
+130. |                    New Caledonia   .3333333   .0382375 |
+     |--------------------------------------------------------|
+131. |                      New Zealand         12   40552.42 |
+132. |                        Nicaragua        3.5   2282.402 |
+133. |                            Niger   .8333333   7.855278 |
+134. |                          Nigeria        8.5   6134.622 |
+135. |                      North Korea   .1666667          . |
+     |--------------------------------------------------------|
+136. |         Northern Mariana Islands   .1666667    .006423 |
+137. |                           Norway   13.16667    872.478 |
+138. |                             Oman          0          0 |
+139. |                         Pakistan   6.166667   4360.984 |
+140. |                        Palestine   3.833333   1100.038 |
+     |--------------------------------------------------------|
+141. |                           Panama   3.166667    319.141 |
+142. |                 Papua New Guinea   .6666667   14.84675 |
+143. |                         Paraguay        2.5   1953.538 |
+144. |                             Peru       12.5     8749.1 |
+145. |                      Philippines   11.66667   17042.26 |
+     |--------------------------------------------------------|
+146. |                           Poland   12.66667   16390.63 |
+147. |                         Portugal        9.5   599.4202 |
+148. |                            Qatar   .6666667    171.927 |
+149. |                          Romania   7.666667   1705.517 |
+150. |                           Russia   6.833333   12185.37 |
+     |--------------------------------------------------------|
+151. |                           Rwanda   4.833333   9274.822 |
+152. |                      Saint Lucia   .3333333   .6052459 |
+153. |                            Samoa   .6666667   190.2173 |
+154. |                     Saudi Arabia   1.333333   24.15523 |
+155. |                          Senegal        5.5   2926.422 |
+     |--------------------------------------------------------|
+156. |                           Serbia          3   27.68473 |
+157. |                       Seychelles         .5   .0348439 |
+158. |                     Sierra Leone   2.666667   1893.816 |
+159. |                        Singapore   18.33333    6265.84 |
+160. |                     Sint Maarten          0          0 |
+     |--------------------------------------------------------|
+161. |                         Slovakia   5.166667   1398.472 |
+162. |                         Slovenia   4.833333   1702.982 |
+163. |                  Solomon Islands         .5   100.1648 |
+164. |                          Somalia   1.166667   90.05489 |
+165. |                     South Africa   11.83333   3779.281 |
+     |--------------------------------------------------------|
+166. |                      South Korea         24   27349.79 |
+167. |                      South Sudan   .8333333    27.6202 |
+168. |                            Spain   32.83333   12196.62 |
+169. |                        Sri Lanka          3   29.61609 |
+170. |                            Sudan   .1666667   5.604649 |
+     |--------------------------------------------------------|
+171. |                         Suriname   .6666667   1.846705 |
+172. |                        Swaziland        1.5   10.67867 |
+173. |                           Sweden   12.33333   3963.264 |
+174. |                      Switzerland   13.66667   732.3103 |
+175. |                            Syria   .6666667   130.1636 |
+     |--------------------------------------------------------|
+176. |                           Taiwan          7          . |
+177. |                       Tajikistan   1.166667   3576.132 |
+178. |                         Tanzania        6.5   31610.35 |
+179. |                         Thailand   10.16667    1325.57 |
+180. |                      Timor-Leste          1   503.9119 |
+     |--------------------------------------------------------|
+181. |                             Togo        2.5   997.8539 |
+182. |                          Tokelau          0          . |
+183. |                            Tonga   .6666667   82.21358 |
+184. |              Trinidad and Tobago          1   1.278666 |
+185. |                          Tunisia          2   34.03153 |
+     |--------------------------------------------------------|
+186. |                           Turkey   6.166667   804.3979 |
+187. |                               UK   69.83334   207234.3 |
+188. |                           Uganda        9.5   42797.32 |
+189. |                          Ukraine   4.333333   50023.88 |
+190. |             United Arab Emirates          8   1509.236 |
+     |--------------------------------------------------------|
+191. |                    United States   84.33334   813523.9 |
+192. |               United States_Guam   .8333333   .5078074 |
+193. |        United States_Puerto Rico          3   196.4128 |
+194. |                          Uruguay        3.5   586.7108 |
+195. |                          Vanuatu   1.166667   5.211214 |
+     |--------------------------------------------------------|
+196. |                        Venezuela        2.5          . |
+197. |                          Vietnam   7.666667   9673.388 |
+198. |            Virgin Islands (U.K.)   .3333333          . |
+199. |            Virgin Islands (U.S.)   .8333333   6.589525 |
+200. |                            Yemen   1.666667   440.5662 |
+     |--------------------------------------------------------|
+201. |                           Zambia   6.166667    77387.8 |
+202. |                         Zimbabwe   4.666667    1523.66 |
+     +--------------------------------------------------------+
+
+. ***Fig 1 - Heat map:
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. export excel using "Fig 1 heat_map - replication.xlsx", sheet("heat map") replace firstrow(varlabels) 
+file Fig 1 heat_map - replication.xlsx saved
+
+. *fig 1 can then be generated using the built-in Map function in excel
+. 
+. restore
+
+. 
+. ***Table 2:
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6.  }
+
+.  
+. 
+. foreach i of varlist num_plat* vol* ratio*  {
+  2. bys CCAFCountry (year): egen `i'1 = mean(`i')
+  3. drop `i'
+  4. ren `i'1  `i'
+  5. }
+(30 missing values generated)
+(30 missing values generated)
+(30 missing values generated)
+(30 missing values generated)
+(30 missing values generated)
+(30 missing values generated)
+(42 missing values generated)
+
+. 
+. 
+. 
+. bys CCAFCountry: keep if _n == _N
+(1,010 observations deleted)
+
+. 
+. order *Region_recip CCAFCountry *law_recip DevMktInd_recip num_plat* vol* ratio* 
+
+. drop year
+
+. 
+. drop ratio*
+
+. 
+. gen ratio_both_retail_all = vol_both_retail_all/vol_both_total_all
+(5 missing values generated)
+
+. label var ratio_both_retail_all "ratio of retail vol. over aggregate vol."
+
+. 
+. gen ratio_both_inst_all = vol_both_inst_all/vol_both_total_all
+(5 missing values generated)
+
+. label var ratio_both_inst_all "ratio of institutional vol. over aggregate vol."
+
+. 
+. gen ratio_int_total_all = vol_int_total_all/vol_both_total_all
+(5 missing values generated)
+
+. label var ratio_int_total_all "ratio of international vol. over aggregate vol."
+
+. 
+. gen ratio_dom_total_all = vol_dom_total_all/vol_both_total_all
+(5 missing values generated)
+
+. label var ratio_dom_total_all "ratio of domestic vol. over aggregate vol."
+
+. 
+. gen ratio_both_total_afeq = vol_both_total_afeq/vol_both_total_all
+(5 missing values generated)
+
+. label var ratio_both_total_afeq "ratio of ECF vol. over aggregate vol."
+
+. 
+. gen ratio_both_total_afdebt = vol_both_total_afdebt/vol_both_total_all
+(5 missing values generated)
+
+. label var ratio_both_total_afdebt "ratio of P2P vol. over aggregate vol."
+
+. 
+. 
+.  foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3.   }
+
+.   
+. 
+. gen num_countries = 1
+
+. label var num_countries "Number of countries"
+
+. 
+. preserve
+
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6. }
+
+. 
+. 
+. collapse (rawsum) num_countries  num_plat* vol* (mean)  ratio* 
+
+. 
+. foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3. }
+
+. 
+. 
+. save table2.dta,replace
+file table2.dta saved
+
+. restore
+
+. 
+. 
+. 
+. preserve
+
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6.  }
+
+.  
+.  
+. gen ExclChina = (CCAFCountry != "China")
+
+. 
+. gen Developed = 1 if DevMktInd_recip == 1 & ExclChina == 1
+(161 missing values generated)
+
+. gen Developin_exlChina = 1 if DevMktInd_recip == 0 & ExclChina == 1
+(42 missing values generated)
+
+. 
+. collapse (rawsum) num_countries num_plat* vol* (mean) ratio*, by(Develop*)
+
+. 
+. drop if Developed == . & Developin_exlChina == .
+(1 observation deleted)
+
+. 
+. 
+.  foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3.   }
+
+. 
+.   
+. append using table2.dta
+
+. save table2.dta,replace
+file table2.dta saved
+
+. restore
+
+. 
+. 
+. 
+. preserve
+
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6.  }
+
+.  
+.  
+. gen ExclChina = (CCAFCountry != "China")
+
+. 
+. gen Developin = 1 if DevMktInd_recip == 0
+(41 missing values generated)
+
+. 
+. collapse (rawsum) num_countries  num_plat* vol* (mean) ratio*, by(Develop*)
+
+. 
+.  foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3.   }
+
+. 
+.  
+. drop if Developin == .
+(1 observation deleted)
+
+.  
+. 
+. append using table2.dta
+
+. save table2.dta,replace
+file table2.dta saved
+
+. restore
+
+. 
+. 
+. preserve
+
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6. }
+
+.  
+. collapse (rawsum) num_countries num_plat* vol* (mean) ratio*, by(civil_law_recip)
+
+. 
+.  foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3.   }
+
+.   
+. drop if civil_law_recip == . | civil_law_recip == 0
+(1 observation deleted)
+
+. append using table2.dta
+
+. save table2.dta,replace
+file table2.dta saved
+
+. 
+. 
+. restore
+
+. 
+. 
+. preserve
+
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6.  }
+
+. 
+. collapse (rawsum) num_countries  num_plat* vol* (mean) ratio* , by(common_law_recip)
+
+. 
+. 
+.  foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3.   }
+
+.   
+. drop if common_law_recip == . | common_law_recip == 0
+(1 observation deleted)
+
+. 
+. append using table2.dta
+
+. save table2.dta,replace
+file table2.dta saved
+
+. restore
+
+. 
+. preserve
+
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6. }
+
+.  
+. collapse (rawsum) num_countries  num_plat* vol* (mean) ratio*, by(islamic_law_recip)
+
+. 
+.  foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3.   }
+
+.   
+. drop if islamic_law_recip == . | islamic_law_recip == 0
+(1 observation deleted)
+
+. 
+. append using table2.dta
+
+. save table2.dta,replace
+file table2.dta saved
+
+. restore
+
+. 
+. drop if islamic_law_recip == .
+(0 observations deleted)
+
+. 
+. use table2.dta,clear
+
+. 
+. gen Markets = .
+(7 missing values generated)
+
+. 
+. order Markets Develop* civil_law_recip common_law_recip islamic_law_recip 
+
+. 
+. replace Markets = 0 if Developin == . & Developed==. & Developin_exlChina ==. & civil_law ==. & common_law  == . & islamic_law ==. 
+(1 real change made)
+
+. replace Markets = 1 if Developed == 1
+(1 real change made)
+
+. replace Markets = 2 if Developin == 1 
+(1 real change made)
+
+. replace Markets = 3 if Developin_exlChina == 1
+(1 real change made)
+
+. replace Markets = 4 if common_law_recip == 1 
+(1 real change made)
+
+. replace Markets = 5 if civil_law_recip == 1
+(1 real change made)
+
+. replace Markets = 6 if islamic_law_recip == 1
+(1 real change made)
+
+. 
+. label  define marketlabel 0 "All markets" 1 "All developed markets" 2 "All developing markets" 3 "All developing markets (excl. China)" 4 "All common law countries" 5 "
+> All civil law countries" 6 "All Musilm law countries"
+
+. label values Markets marketlabel 
+
+. 
+. drop *law_recip Develop*
+
+. 
+. order Markets 
+
+. drop if Markets == .
+(0 observations deleted)
+
+. 
+. sort Markets
+
+. 
+. compress
+  variable Markets was float now byte
+  variable num_countries was double now int
+  (63 bytes saved)
+
+. 
+. list 
+
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  1. |                              Markets | num_co~s | num_pl~l | vol_bo.. | v~il_all | vo~t_all | vol_in~l | vol_do~l | vol_bo~q | vol_bo~t | r~il_all | ra~t_all |
+     |                          All markets |      202 | 1602.833 | 241646.3 | 207076.4 | 34569.92 |  6770.49 | 234875.8 | 3987.209 | 233915.2 | .8774583 | .1225417 |
+     |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |               r~int_~l                |               r~dom_~l                |               ratio_~q                |               ratio_~t                |
+     |               .7411326                |               .2588674                |               .0492119                |               .5190108                |
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  2. |                              Markets | num_co~s | num_pl~l | vol_bo.. | v~il_all | vo~t_all | vol_in~l | vol_do~l | vol_bo~q | vol_bo~t | r~il_all | ra~t_all |
+     |                All developed markets |       41 | 529.1667 | 61012.65 |  33942.2 | 27070.45 | 3733.553 | 57279.09 | 2859.634 | 56702.42 | .7816632 | .2183368 |
+     |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |               r~int_~l                |               r~dom_~l                |               ratio_~q                |               ratio_~t                |
+     |               .5590025                |               .4409975                |               .0839241                |                .625438                |
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  3. |                              Markets | num_co~s | num_pl~l | vol_bo.. | v~il_all | vo~t_all | vol_in~l | vol_do~l | vol_bo~q | vol_bo~t | r~il_all | ra~t_all |
+     |               All developing markets |      161 | 1073.667 | 180633.7 | 173134.2 | 7499.469 | 3036.937 | 177596.7 | 1127.575 | 177212.8 | .9011039 | .0988961 |
+     |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |               r~int_~l                |               r~dom_~l                |               ratio_~q                |               ratio_~t                |
+     |               .7860887                |               .2139113                |               .0406437                |               .4927408                |
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  4. |                              Markets | num_co~s | num_pl~l | vol_bo.. | v~il_all | vo~t_all | vol_in~l | vol_do~l | vol_bo~q | vol_bo~t | r~il_all | ra~t_all |
+     | All developing markets (excl. China) |      160 | 717.1667 | 15491.41 | 10183.04 | 5308.366 | 2831.239 | 12660.17 | 761.7726 | 13089.07 | .9005585 | .0994415 |
+     |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |               r~int_~l                |               r~dom_~l                |               ratio_~q                |               ratio_~t                |
+     |               .7910877                |               .2089123                |               .0408885                |               .4895492                |
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  5. |                              Markets | num_co~s | num_pl~l | vol_bo.. | v~il_all | vo~t_all | vol_in~l | vol_do~l | vol_bo~q | vol_bo~t | r~il_all | ra~t_all |
+     |             All common law countries |       74 | 502.6667 | 64520.79 | 35869.57 | 28651.22 | 3422.124 | 61098.67 | 2668.278 | 59286.87 | .8842483 | .1157517 |
+     |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |               r~int_~l                |               r~dom_~l                |               ratio_~q                |               ratio_~t                |
+     |               .7973076                |               .2026924                |               .0604313                |               .4436488                |
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  6. |                              Markets | num_co~s | num_pl~l | vol_bo.. | v~il_all | vo~t_all | vol_in~l | vol_do~l | vol_bo~q | vol_bo~t | r~il_all | ra~t_all |
+     |              All civil law countries |      129 | 1161.667 | 177689.7 | 171710.6 | 5979.105 | 3421.158 | 174268.5 | 1401.146 | 175078.2 | .8770149 |  .122985 |
+     |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |               r~int_~l                |               r~dom_~l                |               ratio_~q                |               ratio_~t                |
+     |               .6886238                |               .3113762                |               .0558939                |                .562218                |
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  7. |                              Markets | num_co~s | num_pl~l | vol_bo.. | v~il_all | vo~t_all | vol_in~l | vol_do~l | vol_bo~q | vol_bo~t | r~il_all | ra~t_all |
+     |             All Musilm law countries |       29 |     78.5 | 168.6495 | 127.5892 | 41.06032 | 78.89946 | 89.75008 | 18.61909 |  123.863 | .9068558 | .0931443 |
+     |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |               r~int_~l                |               r~dom_~l                |               ratio_~q                |               ratio_~t                |
+     |               .7810946                |               .2189054                |               .1042367                |               .3130115                |
+     +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+. 
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. export excel using "Summary Statistics.xlsx", sheet("Table 2",replace) firstrow(varlabels) 
+file Summary Statistics.xlsx saved
+
+. 
+. 
+. 
+. 
+. 
+. *Table 4: summary statistics for all variables
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. use crowdfunding_country_level_2015_2020.dta,clear
+
+. 
+. merge 1:1 recipient_country year using regindex_country_level_2015_2020
+(label Recipient_country already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                             1,212  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge == 2
+(0 observations deleted)
+
+. drop _merge 
+
+. 
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. merge 1:1 recipient_country year using control_variables
+(variable recipient_country was str32, now str52 to accommodate using data's values)
+(label Recipient_country already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           202
+        from master                         0  (_merge==1)
+        from using                        202  (_merge==2)
+
+    Matched                             1,212  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge == 2
+(202 observations deleted)
+
+. drop _merge 
+
+. 
+. keep recipient_country year P2P_Binary_pub_recip  P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip total_afdebt_dom   retail_afdebt_dom  inst_afdebt_dom  RL_EST_recip
+>  GDP_currentUS_recip Time_startup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_reci
+> p BankBranch_per100k_recip Bank_NPL_recip MobilePhoneUsage_recip Switcher_P2P P2P_year
+
+. 
+. foreach i of varlist total* retail* inst* {
+  2. replace `i' = `i'/1000000
+  3. }
+(322 real changes made)
+(319 real changes made)
+(219 real changes made)
+
+. 
+. replace GDP_currentUS_recip =  GDP_currentUS_recip/1000000000
+(1,158 real changes made)
+
+. 
+. 
+. bys recipient_country (year): gen switching_year = (P2P_year == year)
+
+. 
+. bys recipient_country (switching_year):  gen NeverSwitcher_P2P = (P2P_year == 0)
+
+. 
+. bys recipient_country (switching_year):  gen AlwaysSwitcher_P2P = (P2P_year < 2015 & P2P_year > 0)
+
+. 
+. 
+. keep if year >= 2015
+(0 observations deleted)
+
+. 
+. label var total_afdebt_dom "Debt crowdfunding volume (domestic; retail + institutional) ($ mil)"
+
+. 
+. label var retail_afdebt_dom "Debt crowdfunding volume (domestic; retail) ($ mil)"
+
+. 
+. label var inst_afdebt_dom "Debt crowdfunding volume (domestic; institutional) ($ mil)"
+
+. 
+. 
+. label var RL_EST_recip "Rule of Law"
+
+. 
+. label var GDP_currentUS_recip "GDP ($ bil)"
+
+. 
+. label var Time_startup_recip "Time required to start a business (days)"
+
+. 
+. label var Cost_startup_recip "Cost of business start-up procedures (% of GNI per capita)"
+
+. 
+. label var Tax_income_pct_recip "Taxes on income, profits and capital gains (% of revenue)"
+
+. 
+. label var GC_LegalRights_recip "Strength of legal rights index (0-12)"
+
+. 
+. label var GC_CreditInfo_recip "Depth of credit information index (0-8)"
+
+. 
+. label var RI_recip "Resolving insolvency"
+
+. 
+. label var Bank_C2A_recip "Bank capital to assets ratio (%)"
+
+. 
+. label var DomCredit_by_banks_recip "Domestic credit to private sector by banks (% of GDP)"
+
+. 
+. label var BankBranch_per100k_recip "Commercial bank branches (per 100k adults)"
+
+. 
+. label var Bank_NPL_recip "Bank bad-debt ratio (%)"
+
+. 
+. label var MobilePhoneUsage_recip "Mobile cellular subscriptions (per 100 people)"
+
+. 
+. 
+. gen num_countries = 1
+
+. label var num_countries "Number of countries"
+
+. 
+. 
+. compress
+  variable P2P_RegIndex_pub_recip was float now byte
+  variable Switcher_P2P_recip was float now byte
+  variable P2P_Binary_pub_recip was float now byte
+  variable P2P_year_recip was float now int
+  variable switching_year was float now byte
+  variable NeverSwitcher_P2P was float now byte
+  variable AlwaysSwitcher_P2P was float now byte
+  variable num_countries was float now byte
+  variable year was double now int
+  variable recipient_country was str52 now str32
+  (59,388 bytes saved)
+
+. 
+. 
+. preserve
+
+. 
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6. }
+
+. 
+. foreach i of varlist total_afdebt_dom P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip  retail_afdebt_dom  inst_afdebt_dom  RL_EST_recip GDP_currentUS_recip Time_star
+> tup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_per100k_recip Ban
+> k_NPL_recip MobilePhoneUsage_recip {
+  2. bys recipient_country (year): egen `i'1 = mean(`i')
+  3. drop `i'
+  4. ren `i'1  `i'
+  5. }
+(96 missing values generated)
+(42 missing values generated)
+(150 missing values generated)
+(150 missing values generated)
+(372 missing values generated)
+(222 missing values generated)
+(222 missing values generated)
+(222 missing values generated)
+(372 missing values generated)
+(174 missing values generated)
+(204 missing values generated)
+(366 missing values generated)
+(42 missing values generated)
+
+. 
+. 
+. bys recipient_country: keep if _n == _N
+(1,010 observations deleted)
+
+. 
+. drop if switching_year == 1
+(21 observations deleted)
+
+. 
+. drop if NeverSwitcher_P2P == 0 & AlwaysSwitcher_P2P == 0 
+(29 observations deleted)
+
+. 
+. 
+. collapse (sum) num_countries (mean) P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip  total_afdebt_dom   retail_afdebt_dom  inst_afdebt_dom  RL_EST_recip GDP_currentU
+> S_recip Time_startup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_
+> per100k_recip Bank_NPL_recip MobilePhoneUsage_recip , by(NeverSwitcher_P2P AlwaysSwitcher_P2P)
+
+. 
+. foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3. }
+
+. 
+. 
+. gen countries = 3  if AlwaysSwitcher_P2P == 1
+(1 missing value generated)
+
+. replace countries = 4 if NeverSwitcher_P2P == 1
+(1 real change made)
+
+. 
+. save table4_means.dta,replace
+file table4_means.dta saved
+
+. 
+. restore
+
+. 
+. 
+. preserve
+
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6. }
+
+. 
+. foreach i of varlist total_afdebt_dom P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip   retail_afdebt_dom  inst_afdebt_dom  RL_EST_recip GDP_currentUS_recip Time_sta
+> rtup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_per100k_recip Ba
+> nk_NPL_recip MobilePhoneUsage_recip {
+  2. bys recipient_country (year): egen `i'1 = mean(`i')
+  3. drop `i'
+  4. ren `i'1  `i'
+  5. }
+(96 missing values generated)
+(42 missing values generated)
+(150 missing values generated)
+(150 missing values generated)
+(372 missing values generated)
+(222 missing values generated)
+(222 missing values generated)
+(222 missing values generated)
+(372 missing values generated)
+(174 missing values generated)
+(204 missing values generated)
+(366 missing values generated)
+(42 missing values generated)
+
+. 
+.  
+. 
+. 
+. bys recipient_country: keep if _n == _N
+(1,010 observations deleted)
+
+. 
+. collapse (sum) num_countries (mean) P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip  total_afdebt_dom   retail_afdebt_dom  inst_afdebt_dom  RL_EST_recip GDP_currentU
+> S_recip Time_startup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_
+> per100k_recip Bank_NPL_recip MobilePhoneUsage_recip
+
+. 
+. foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3. }
+
+. 
+. gen countries = 1 
+
+. 
+. append using table4_means.dta
+
+. 
+. save table4_means.dta,replace
+file table4_means.dta saved
+
+. 
+. 
+. 
+. restore 
+
+. 
+. keep if switching_year == 1
+(1,162 observations deleted)
+
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6. }
+
+. 
+. collapse (sum) num_countries (mean) P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip  total_afdebt_dom   retail_afdebt_dom  inst_afdebt_dom  RL_EST_recip GDP_currentU
+> S_recip Time_startup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_
+> per100k_recip Bank_NPL_recip MobilePhoneUsage_recip
+
+. 
+. foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3. }
+
+. 
+. 
+. gen countries = 2
+
+. 
+. append using table4_means.dta
+
+. 
+. save table4_means.dta,replace
+file table4_means.dta saved
+
+. 
+. use table4_means.dta,clear
+
+. 
+. label  define countrieslabel 1 "All countries" 2 "Countries that added regulation after 2015" 3 "Countries that added regulation before 2015" 4 "Countries that never ha
+> d regulation" 
+
+. 
+. 
+. label values countries countrieslabel 
+
+. 
+. sort countries
+
+. 
+. drop *Switcher* 
+
+. 
+. order countries num_countries
+
+. 
+. save table4_means.dta,replace
+file table4_means.dta saved
+
+. 
+. list 
+
+     +-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  1. |                                   countries | num_co~s | P2P_Re.. | P~Adj_~p | total_a~m | retail_~m | inst_af~m | RL_EST_r~p | GDP_cur~p | Time_st~p | Cost_st~p |
+     |                               All countries |      202 | 4.106436 | 1.116447 | 1134.2478 | 971.39423 | 162.85361 | -.00431028 | 486.10751 | 22.057966 | 24.726101 |
+     |-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |    Tax_inc~p    |    GC_Leg~p    |    GC_Cre~p    |    RI_recip    |    Bank_C2~p     |    DomCred~p     |    BankBra~p     |    Bank_NP~p     |    MobileP~p     |
+     |      24.2509    |    43.13144    |    61.07576    |    45.88152    |    9.4840984     |    55.514847     |    16.152658     |     6.710722     |    109.51161     |
+     +-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  2. |                                   countries | num_co~s | P2P_Re.. | P~Adj_~p | total_a~m | retail_~m | inst_af~m | RL_EST_r~p | GDP_cur~p | Time_st~p | Cost_st~p |
+     |  Countries that added regulation after 2015 |       50 |    28.04 | 7.663445 |  1896.227 | 1860.5749 | 35.652143 |  .61850448 | 732.49333 | 12.114286 | 6.9571429 |
+     |-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |    Tax_inc~p    |    GC_Leg~p    |    GC_Cre~p    |    RI_recip    |    Bank_C2~p     |    DomCred~p     |    BankBra~p     |    Bank_NP~p     |    MobileP~p     |
+     |    25.351424    |    40.74074    |    84.25926    |    62.61111    |    8.7159994     |     72.49061     |    20.246809     |    4.7913913     |    126.49847     |
+     +-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  3. |                                   countries | num_co~s | P2P_Re.. | P~Adj_~p | total_a~m | retail_~m | inst_af~m | RL_EST_r~p | GDP_cur~p | Time_st~p | Cost_st~p |
+     | Countries that added regulation before 2015 |        8 | 30.14583 | 7.974768 | 6876.3447 |  3467.457 | 3408.8879 |  1.3447425 | 3200.9202 |     3.924 | .65200001 |
+     |-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |    Tax_inc~p    |    GC_Leg~p    |    GC_Cre~p    |    RI_recip    |    Bank_C2~p     |    DomCred~p     |    BankBra~p     |    Bank_NP~p     |    MobileP~p     |
+     |    41.597851    |     75.6664    |        92.5    |     80.7572    |    6.7364526     |    107.91595     |    31.043335     |    1.7561175     |    108.89059     |
+     +-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  4. |                                   countries | num_co~s | P2P_Re.. | P~Adj_~p | total_a~m | retail_~m | inst_af~m | RL_EST_r~p | GDP_cur~p | Time_st~p | Cost_st~p |
+     |         Countries that never had regulation |      144 |        0 |        0 | 25.352716 | 20.560919 | 4.7917962 | -.33597922 | 223.71089 | 25.878212 | 33.143742 |
+     |-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+     |    Tax_inc~p    |    GC_Leg~p    |    GC_Cre~p    |    RI_recip    |    Bank_C2~p     |    DomCred~p     |    BankBra~p     |    Bank_NP~p     |    MobileP~p     |
+     |    23.047546    |    41.25034    |    51.58482    |     36.8822    |    9.9248037     |    46.805794     |    13.687498     |    7.4650183     |    103.94923     |
+     +-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+. 
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. export excel using "Summary Statistics.xlsx", sheet("Table 4 Means", replace)  firstrow(varlabels) 
+file Summary Statistics.xlsx saved
+
+. 
+. 
+. 
+. ***Table 4: ANOVA
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. use crowdfunding_country_level_2015_2020.dta,clear
+
+. 
+. merge 1:1 recipient_country year using regindex_country_level_2015_2020
+(label Recipient_country already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                             0
+    Matched                             1,212  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge == 2
+(0 observations deleted)
+
+. drop _merge 
+
+. 
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. merge 1:1 recipient_country year using control_variables
+(variable recipient_country was str32, now str52 to accommodate using data's values)
+(label Recipient_country already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           202
+        from master                         0  (_merge==1)
+        from using                        202  (_merge==2)
+
+    Matched                             1,212  (_merge==3)
+    -----------------------------------------
+
+. drop if _merge == 2
+(202 observations deleted)
+
+. drop _merge 
+
+. 
+. keep recipient_country year P2P_Binary_pub_recip  P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip total_afdebt_dom   retail_afdebt_dom  inst_afdebt_dom  RL_EST_recip
+>  GDP_currentUS_recip Time_startup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_reci
+> p BankBranch_per100k_recip Bank_NPL_recip MobilePhoneUsage_recip Switcher_P2P P2P_year
+
+. 
+. foreach i of varlist total* retail* inst* {
+  2. replace `i' = `i'/1000000
+  3. }
+(322 real changes made)
+(319 real changes made)
+(219 real changes made)
+
+. 
+. replace GDP_currentUS_recip =  GDP_currentUS_recip/1000000000
+(1,158 real changes made)
+
+. 
+. bys recipient_country (year): gen switching_year = (year == P2P_year)
+
+. bys recipient_country (switching_year): gen NeverSwitcher_P2P = (P2P_year == 0)
+
+. 
+. bys recipient_country (switching_year): gen AlwaysSwitcher_P2P = (P2P_year < 2015 & P2P_year > 0)
+
+. 
+. keep if year >= 2015
+(0 observations deleted)
+
+. 
+. label var total_afdebt_dom "Debt crowdfunding volume (domestic; retail + institutional) ($ mil)"
+
+. 
+. label var retail_afdebt_dom "Debt crowdfunding volume (domestic; retail) ($ mil)"
+
+. 
+. label var inst_afdebt_dom "Debt crowdfunding volume (domestic; institutional) ($ mil)"
+
+. 
+. 
+. label var RL_EST_recip "Rule of Law"
+
+. 
+. label var GDP_currentUS_recip "GDP ($ bil)"
+
+. 
+. label var Time_startup_recip "Time required to start a business (days)"
+
+. 
+. label var Cost_startup_recip "Cost of business start-up procedures (% of GNI per capita)"
+
+. 
+. label var Tax_income_pct_recip "Taxes on income, profits and capital gains (% of revenue)"
+
+. 
+. label var GC_LegalRights_recip "Strength of legal rights index (0-12)"
+
+. 
+. label var GC_CreditInfo_recip "Depth of credit information index (0-8)"
+
+. 
+. label var RI_recip "Resolving insolvency"
+
+. 
+. label var Bank_C2A_recip "Bank capital to assets ratio (%)"
+
+. 
+. label var DomCredit_by_banks_recip "Domestic credit to private sector by banks (% of GDP)"
+
+. 
+. label var BankBranch_per100k_recip "Commercial bank branches (per 100k adults)"
+
+. 
+. label var Bank_NPL_recip "Bank bad-debt ratio (%)"
+
+. 
+. label var MobilePhoneUsage_recip "Mobile cellular subscriptions (per 100 people)"
+
+. 
+. 
+. gen num_countries = 1
+
+. label var num_countries "Number of countries"
+
+. 
+. 
+. compress
+  variable P2P_RegIndex_pub_recip was float now byte
+  variable Switcher_P2P_recip was float now byte
+  variable P2P_Binary_pub_recip was float now byte
+  variable P2P_year_recip was float now int
+  variable switching_year was float now byte
+  variable NeverSwitcher_P2P was float now byte
+  variable AlwaysSwitcher_P2P was float now byte
+  variable num_countries was float now byte
+  variable year was double now int
+  variable recipient_country was str52 now str32
+  (59,388 bytes saved)
+
+. 
+. 
+. 
+. foreach v of var * {
+  2.         local l`v' : variable label `v'
+  3.        if `"`l`v''"' == "" {
+  4.                 local l`v' "`v'"
+  5.         }
+  6. }
+
+. 
+. //replace NeverSwitcher_P2P = 0 if switching_year == 1 
+. 
+. keep if switching_year == 1 | AlwaysSwitcher_P2P == 1 |  NeverSwitcher_P2P == 1
+(250 observations deleted)
+
+. 
+. 
+. foreach i of varlist total_afdebt_dom P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip  retail_afdebt_dom  inst_afdebt_dom  RL_EST_recip GDP_currentUS_recip Time_star
+> tup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_per100k_recip Ban
+> k_NPL_recip MobilePhoneUsage_recip {
+  2. bys recipient_country (year): egen `i'1 = mean(`i')
+  3. drop `i'
+  4. ren `i'1  `i'
+  5. }
+(112 missing values generated)
+(42 missing values generated)
+(166 missing values generated)
+(166 missing values generated)
+(349 missing values generated)
+(233 missing values generated)
+(233 missing values generated)
+(233 missing values generated)
+(338 missing values generated)
+(165 missing values generated)
+(195 missing values generated)
+(342 missing values generated)
+(37 missing values generated)
+
+. 
+. bys recipient_country: keep if _n == _N
+(760 observations deleted)
+
+. 
+. keep num_countries AlwaysSwitcher_P2P NeverSwitcher_P2P switching_year total_afdebt_dom P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip  retail_afdebt_dom  inst_afde
+> bt_dom  RL_EST_recip GDP_currentUS_recip Time_startup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip Dom
+> Credit_by_banks_recip BankBranch_per100k_recip Bank_NPL_recip MobilePhoneUsage_recip 
+
+. 
+. preserve 
+
+. 
+. collapse (sum) num_countries (mean) P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip total_afdebt_dom retail_afdebt_dom  inst_afdebt_dom   RL_EST_recip GDP_currentUS_
+> recip Time_startup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_pe
+> r100k_recip Bank_NPL_recip MobilePhoneUsage_recip, by(NeverSwitcher_P2P AlwaysSwitcher_P2P)
+
+. foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3. }
+
+. 
+. save table4_anova.dta,replace
+file table4_anova.dta saved
+
+. 
+. 
+. restore 
+
+. 
+. preserve 
+
+. 
+. drop if NeverSwitcher_P2P == 1
+(144 observations deleted)
+
+. 
+. foreach i of varlist P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip total_afdebt_dom   retail_afdebt_dom  inst_afdebt_dom  RL_EST_recip GDP_currentUS_recip Time_sta
+> rtup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_per100k_recip Ba
+> nk_NPL_recip MobilePhoneUsage_recip {
+  2. anova `i' switching_year
+  3. replace  `i' =  Ftail(e(df_m), e(df_r), e(F))
+  4. }
+
+                         Number of obs =         58    R-squared     =  0.0047
+                         Root MSE      =    10.7402    Adj R-squared = -0.0131
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  30.583019          1   30.583019      0.27  0.6086
+                         |
+             switching~r |  30.583019          1   30.583019      0.27  0.6086
+                         |
+                Residual |  6459.6666         56   115.35119  
+             ------------+----------------------------------------------------
+                   Total |  6490.2496         57   113.86403  
+(58 real changes made)
+
+                         Number of obs =         58    R-squared     =  0.0015
+                         Root MSE      =    2.82803    Adj R-squared = -0.0163
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |    .668432          1     .668432      0.08  0.7736
+                         |
+             switching~r |    .668432          1     .668432      0.08  0.7736
+                         |
+                Residual |  447.87326         56   7.9977368  
+             ------------+----------------------------------------------------
+                   Total |  448.54169         57   7.8691525  
+(58 real changes made)
+
+                         Number of obs =         58    R-squared     =  0.0166
+                         Root MSE      =    13449.6    Adj R-squared = -0.0010
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  1.710e+08          1   1.710e+08      0.95  0.3350
+                         |
+             switching~r |  1.710e+08          1   1.710e+08      0.95  0.3350
+                         |
+                Residual |  1.013e+10         56   1.809e+08  
+             ------------+----------------------------------------------------
+                   Total |  1.030e+10         57   1.807e+08  
+(58 real changes made)
+
+                         Number of obs =         58    R-squared     =  0.0021
+                         Root MSE      =    12367.2    Adj R-squared = -0.0157
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |   17807382          1    17807382      0.12  0.7342
+                         |
+             switching~r |   17807382          1    17807382      0.12  0.7342
+                         |
+                Residual |  8.565e+09         56   1.529e+08  
+             ------------+----------------------------------------------------
+                   Total |  8.583e+09         57   1.506e+08  
+(58 real changes made)
+
+                         Number of obs =         58    R-squared     =  0.1457
+                         Root MSE      =    2866.63    Adj R-squared =  0.1304
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |   78473925          1    78473925      9.55  0.0031
+                         |
+             switching~r |   78473925          1    78473925      9.55  0.0031
+                         |
+                Residual |  4.602e+08         56   8217573.7  
+             ------------+----------------------------------------------------
+                   Total |  5.387e+08         57   9450141.3  
+(58 real changes made)
+
+                         Number of obs =         35    R-squared     =  0.1169
+                         Root MSE      =    .822191    Adj R-squared =  0.0902
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  2.9535614          1   2.9535614      4.37  0.0444
+                         |
+             switching~r |  2.9535614          1   2.9535614      4.37  0.0444
+                         |
+                Residual |  22.307922         33   .67599764  
+             ------------+----------------------------------------------------
+                   Total |  25.261483         34   .74298481  
+(58 real changes made)
+
+                         Number of obs =         58    R-squared     =  0.0835
+                         Root MSE      =     2869.5    Adj R-squared =  0.0672
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |   42021594          1    42021594      5.10  0.0278
+                         |
+             switching~r |   42021594          1    42021594      5.10  0.0278
+                         |
+                Residual |  4.611e+08         56   8234041.6  
+             ------------+----------------------------------------------------
+                   Total |  5.031e+08         57   8826805.7  
+(58 real changes made)
+
+                         Number of obs =         33    R-squared     =  0.1093
+                         Root MSE      =    8.65093    Adj R-squared =  0.0805
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  284.58512          1   284.58512      3.80  0.0603
+                         |
+             switching~r |  284.58512          1   284.58512      3.80  0.0603
+                         |
+                Residual |  2319.9977         31   74.838637  
+             ------------+----------------------------------------------------
+                   Total |  2604.5829         32   81.393215  
+(58 real changes made)
+
+                         Number of obs =         33    R-squared     =  0.1010
+                         Root MSE      =    6.95897    Adj R-squared =  0.0720
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  168.65684          1   168.65684      3.48  0.0715
+                         |
+             switching~r |  168.65684          1   168.65684      3.48  0.0715
+                         |
+                Residual |  1501.2466         31   48.427311  
+             ------------+----------------------------------------------------
+                   Total |  1669.9035         32   52.184483  
+(58 real changes made)
+
+                         Number of obs =         47    R-squared     =  0.1189
+                         Root MSE      =    12.6135    Adj R-squared =  0.0993
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  965.93151          1   965.93151      6.07  0.0176
+                         |
+             switching~r |  965.93151          1   965.93151      6.07  0.0176
+                         |
+                Residual |  7159.5647         45   159.10144  
+             ------------+----------------------------------------------------
+                   Total |  8125.4962         46   176.64122  
+(58 real changes made)
+
+                         Number of obs =         32    R-squared     =  0.2371
+                         Root MSE      =    23.4911    Adj R-squared =  0.2117
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  5146.0383          1   5146.0383      9.33  0.0047
+                         |
+             switching~r |  5146.0383          1   5146.0383      9.33  0.0047
+                         |
+                Residual |  16554.989         30   551.83298  
+             ------------+----------------------------------------------------
+                   Total |  21701.028         31   700.03315  
+(58 real changes made)
+
+                         Number of obs =         32    R-squared     =  0.0286
+                         Root MSE      =    18.0256    Adj R-squared = -0.0038
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |   286.4945          1    286.4945      0.88  0.3552
+                         |
+             switching~r |   286.4945          1    286.4945      0.88  0.3552
+                         |
+                Residual |  9747.6852         30   324.92284  
+             ------------+----------------------------------------------------
+                   Total |   10034.18         31   323.68322  
+(58 real changes made)
+
+                         Number of obs =         32    R-squared     =  0.1053
+                         Root MSE      =    19.8346    Adj R-squared =  0.0755
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  1389.1524          1   1389.1524      3.53  0.0700
+                         |
+             switching~r |  1389.1524          1   1389.1524      3.53  0.0700
+                         |
+                Residual |  11802.356         30   393.41186  
+             ------------+----------------------------------------------------
+                   Total |  13191.508         31   425.53252  
+(58 real changes made)
+
+                         Number of obs =         45    R-squared     =  0.0407
+                         Root MSE      =    2.45183    Adj R-squared =  0.0184
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  10.972095          1   10.972095      1.83  0.1838
+                         |
+             switching~r |  10.972095          1   10.972095      1.83  0.1838
+                         |
+                Residual |  258.49254         43   6.0114544  
+             ------------+----------------------------------------------------
+                   Total |  269.46463         44   6.1241962  
+(58 real changes made)
+
+                         Number of obs =         51    R-squared     =  0.0630
+                         Root MSE      =    37.4853    Adj R-squared =  0.0438
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  4626.1098          1   4626.1098      3.29  0.0757
+                         |
+             switching~r |  4626.1098          1   4626.1098      3.29  0.0757
+                         |
+                Residual |  68852.196         49   1405.1469  
+             ------------+----------------------------------------------------
+                   Total |  73478.306         50   1469.5661  
+(58 real changes made)
+
+                         Number of obs =         50    R-squared     =  0.0338
+                         Root MSE      =    13.9957    Adj R-squared =  0.0137
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  328.71322          1   328.71322      1.68  0.2014
+                         |
+             switching~r |  328.71322          1   328.71322      1.68  0.2014
+                         |
+                Residual |   9402.207         48   195.87931  
+             ------------+----------------------------------------------------
+                   Total |  9730.9202         49   198.59021  
+(58 real changes made)
+
+                         Number of obs =         47    R-squared     =  0.0216
+                         Root MSE      =    5.09751    Adj R-squared = -0.0001
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  25.874491          1   25.874491      1.00  0.3237
+                         |
+             switching~r |  25.874491          1   25.874491      1.00  0.3237
+                         |
+                Residual |  1169.3055         45   25.984567  
+             ------------+----------------------------------------------------
+                   Total |    1195.18         46   25.982174  
+(58 real changes made)
+
+                         Number of obs =         55    R-squared     =  0.0535
+                         Root MSE      =    23.5194    Adj R-squared =  0.0356
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  1657.2901          1   1657.2901      3.00  0.0893
+                         |
+             switching~r |  1657.2901          1   1657.2901      3.00  0.0893
+                         |
+                Residual |  29317.582         53   553.16193  
+             ------------+----------------------------------------------------
+                   Total |  30974.873         54   573.60875  
+(58 real changes made)
+
+. 
+. collapse (sum) num_countries (mean) P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip total_afdebt_dom retail_afdebt_dom  inst_afdebt_dom   RL_EST_recip GDP_currentUS_
+> recip Time_startup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_pe
+> r100k_recip Bank_NPL_recip MobilePhoneUsage_recip
+
+. foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3. }
+
+. append using table4_anova.dta
+
+. save table4_anova.dta,replace
+file table4_anova.dta saved
+
+. restore  
+
+. 
+. drop if AlwaysSwitcher_P2P == 1
+(8 observations deleted)
+
+. 
+. foreach i of varlist P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip total_afdebt_dom   retail_afdebt_dom  inst_afdebt_dom  RL_EST_recip GDP_currentUS_recip Time_sta
+> rtup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_per100k_recip Ba
+> nk_NPL_recip MobilePhoneUsage_recip {
+  2. anova `i' switching_year
+  3. replace  `i' =  Ftail(e(df_m), e(df_r), e(F))
+  4. }
+
+                         Number of obs =        194    R-squared     =  0.8354
+                         Root MSE      =    5.47243    Adj R-squared =  0.8345
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  29180.101          1   29180.101    974.38  0.0000
+                         |
+             switching~r |  29180.101          1   29180.101    974.38  0.0000
+                         |
+                Residual |    5749.92        192     29.9475  
+             ------------+----------------------------------------------------
+                   Total |  34930.021        193   180.98456  
+(50 real changes made)
+
+                         Number of obs =        194    R-squared     =  0.8407
+                         Root MSE      =    1.46656    Adj R-squared =  0.8399
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  2179.6099          1   2179.6099   1013.40  0.0000
+                         |
+             switching~r |  2179.6099          1   2179.6099   1013.40  0.0000
+                         |
+                Residual |  412.95047        192   2.1507837  
+             ------------+----------------------------------------------------
+                   Total |  2592.5604        193   13.432956  
+(50 real changes made)
+
+                         Number of obs =        194    R-squared     =  0.0154
+                         Root MSE      =    6581.43    Adj R-squared =  0.0103
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  1.299e+08          1   1.299e+08      3.00  0.0849
+                         |
+             switching~r |  1.299e+08          1   1.299e+08      3.00  0.0849
+                         |
+                Residual |  8.317e+09        192    43315234  
+             ------------+----------------------------------------------------
+                   Total |  8.446e+09        193    43763876  
+(194 real changes made)
+
+                         Number of obs =        194    R-squared     =  0.0152
+                         Root MSE      =    6501.23    Adj R-squared =  0.0101
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  1.257e+08          1   1.257e+08      2.97  0.0863
+                         |
+             switching~r |  1.257e+08          1   1.257e+08      2.97  0.0863
+                         |
+                Residual |  8.115e+09        192    42266010  
+             ------------+----------------------------------------------------
+                   Total |  8.241e+09        193    42698067  
+(194 real changes made)
+
+                         Number of obs =        194    R-squared     =  0.0248
+                         Root MSE      =    85.1004    Adj R-squared =  0.0197
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  35345.355          1   35345.355      4.88  0.0283
+                         |
+             switching~r |  35345.355          1   35345.355      4.88  0.0283
+                         |
+                Residual |  1390479.4        192   7242.0804  
+             ------------+----------------------------------------------------
+                   Total |  1425824.8        193   7387.6932  
+(194 real changes made)
+
+                         Number of obs =        158    R-squared     =  0.1479
+                         Root MSE      =    .880537    Adj R-squared =  0.1424
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  20.988497          1   20.988497     27.07  0.0000
+                         |
+             switching~r |  20.988497          1   20.988497     27.07  0.0000
+                         |
+                Residual |   120.9539        156    .7753455  
+             ------------+----------------------------------------------------
+                   Total |  141.94239        157   .90409169  
+(194 real changes made)
+
+                         Number of obs =        187    R-squared     =  0.0459
+                         Root MSE      =    1032.66    Adj R-squared =  0.0407
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  9482288.3          1   9482288.3      8.89  0.0032
+                         |
+             switching~r |  9482288.3          1   9482288.3      8.89  0.0032
+                         |
+                Residual |  1.973e+08        185   1066383.8  
+             ------------+----------------------------------------------------
+                   Total |  2.068e+08        186   1111630.6  
+(194 real changes made)
+
+                         Number of obs =        151    R-squared     =  0.0358
+                         Root MSE      =     27.947    Adj R-squared =  0.0293
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  4320.8663          1   4320.8663      5.53  0.0200
+                         |
+             switching~r |  4320.8663          1   4320.8663      5.53  0.0200
+                         |
+                Residual |  116374.42        149   781.03634  
+             ------------+----------------------------------------------------
+                   Total |  120695.28        150   804.63521  
+(194 real changes made)
+
+                         Number of obs =        151    R-squared     =  0.0557
+                         Root MSE      =    42.1925    Adj R-squared =  0.0493
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  15640.273          1   15640.273      8.79  0.0035
+                         |
+             switching~r |  15640.273          1   15640.273      8.79  0.0035
+                         |
+                Residual |   265250.8        149   1780.2067  
+             ------------+----------------------------------------------------
+                   Total |  280891.07        150   1872.6071  
+(194 real changes made)
+
+                         Number of obs =        134    R-squared     =  0.0081
+                         Root MSE      =    11.9673    Adj R-squared =  0.0006
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  154.99725          1   154.99725      1.08  0.3001
+                         |
+             switching~r |  154.99725          1   154.99725      1.08  0.3001
+                         |
+                Residual |  18904.415        132   143.21526  
+             ------------+----------------------------------------------------
+                   Total |  19059.412        133   143.30385  
+(194 real changes made)
+
+                         Number of obs =        139    R-squared     =  0.0001
+                         Root MSE      =    24.6416    Adj R-squared = -0.0072
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  5.6496665          1   5.6496665      0.01  0.9233
+                         |
+             switching~r |  5.6496665          1   5.6496665      0.01  0.9233
+                         |
+                Residual |  83187.567        137   607.20852  
+             ------------+----------------------------------------------------
+                   Total |  83193.216        138   602.84939  
+(194 real changes made)
+
+                         Number of obs =        139    R-squared     =  0.1132
+                         Root MSE      =    36.4504    Adj R-squared =  0.1067
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  23226.471          1   23226.471     17.48  0.0001
+                         |
+             switching~r |  23226.471          1   23226.471     17.48  0.0001
+                         |
+                Residual |  182022.63        137   1328.6323  
+             ------------+----------------------------------------------------
+                   Total |   205249.1        138   1487.3123  
+(194 real changes made)
+
+                         Number of obs =        139    R-squared     =  0.1951
+                         Root MSE      =    20.8264    Adj R-squared =  0.1892
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  14401.573          1   14401.573     33.20  0.0000
+                         |
+             switching~r |  14401.573          1   14401.573     33.20  0.0000
+                         |
+                Residual |  59422.168        137   433.73846  
+             ------------+----------------------------------------------------
+                   Total |  73823.741        138   534.95464  
+(194 real changes made)
+
+                         Number of obs =        136    R-squared     =  0.0302
+                         Root MSE      =    3.19017    Adj R-squared =  0.0229
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  42.418008          1   42.418008      4.17  0.0432
+                         |
+             switching~r |  42.418008          1   42.418008      4.17  0.0432
+                         |
+                Residual |  1363.7402        134   10.177166  
+             ------------+----------------------------------------------------
+                   Total |  1406.1582        135   10.415987  
+(194 real changes made)
+
+                         Number of obs =        168    R-squared     =  0.0810
+                         Root MSE      =    39.0813    Adj R-squared =  0.0754
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  22331.959          1   22331.959     14.62  0.0002
+                         |
+             switching~r |  22331.959          1   22331.959     14.62  0.0002
+                         |
+                Residual |  253539.24        166   1527.3448  
+             ------------+----------------------------------------------------
+                   Total |   275871.2        167   1651.9233  
+(194 real changes made)
+
+                         Number of obs =        164    R-squared     =  0.0509
+                         Root MSE      =    12.8829    Adj R-squared =  0.0451
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  1442.6343          1   1442.6343      8.69  0.0037
+                         |
+             switching~r |  1442.6343          1   1442.6343      8.69  0.0037
+                         |
+                Residual |  26887.194        162   165.97034  
+             ------------+----------------------------------------------------
+                   Total |  28329.829        163   173.80263  
+(194 real changes made)
+
+                         Number of obs =        137    R-squared     =  0.0317
+                         Root MSE      =    6.94787    Adj R-squared =  0.0246
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  213.50925          1   213.50925      4.42  0.0373
+                         |
+             switching~r |  213.50925          1   213.50925      4.42  0.0373
+                         |
+                Residual |  6516.8505        135   48.272967  
+             ------------+----------------------------------------------------
+                   Total |  6730.3597        136   49.487939  
+(194 real changes made)
+
+                         Number of obs =        189    R-squared     =  0.0595
+                         Root MSE      =    39.4857    Adj R-squared =  0.0545
+
+                  Source | Partial SS         df         MS        F    Prob>F
+             ------------+----------------------------------------------------
+                   Model |  18455.506          1   18455.506     11.84  0.0007
+                         |
+             switching~r |  18455.506          1   18455.506     11.84  0.0007
+                         |
+                Residual |  291556.17        187   1559.1239  
+             ------------+----------------------------------------------------
+                   Total |  310011.68        188   1648.9983  
+(194 real changes made)
+
+. 
+. collapse (sum) num_countries (mean) P2P_RegIndex_pub_recip  P2P_RegIndex_Adj_pub_recip total_afdebt_dom retail_afdebt_dom  inst_afdebt_dom   RL_EST_recip GDP_currentUS_
+> recip Time_startup_recip Cost_startup_recip Tax_income_pct_recip GC_LegalRights_recip GC_CreditInfo_recip RI_recip Bank_C2A_recip DomCredit_by_banks_recip BankBranch_pe
+> r100k_recip Bank_NPL_recip MobilePhoneUsage_recip
+
+. 
+. foreach v of var * {
+  2.         label var `v' `"`l`v''"'
+  3. }
+
+. append using table4_anova.dta
+
+. save table4_anova.dta,replace
+file table4_anova.dta saved
+
+. 
+. list 
+
+     +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+  1. | num_co~s | P2P_Re.. | P~Adj_~p | total_~m | retail~m | inst_a~m | RL_EST_~p | GDP_cu~p | Time_s~p | Cost_s~p | Tax_in~p | GC_Leg~p | GC_Cre~p | RI_recip |
+     |      194 |        0 |        0 | .0849211 | .0862789 | .0283436 |  6.09e-07 | .0032499 | .0199776 |  .003536 | .3000926 |  .923297 | .0000515 | 5.24e-08 |
+     |---------------------+---------------------+---------------------+----------------------------------------------------------------------------------------|
+     |      Bank_C~p       |      DomCre~p       |      BankBr~p       |      Bank_N~p       |      Mobile~p       |      Never~2P       |       Alway~2P       |
+     |       .043158       |      .0001856       |      .0036686       |      .0373144       |      .0007161       |             .       |              .       |
+     +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+  2. | num_co~s | P2P_Re.. | P~Adj_~p | total_~m | retail~m | inst_a~m | RL_EST_~p | GDP_cu~p | Time_s~p | Cost_s~p | Tax_in~p | GC_Leg~p | GC_Cre~p | RI_recip |
+     |       58 | .6086442 | .7735739 | .3350331 | .7342187 | .0031129 |  .0443776 | .0277909 | .0602651 | .0715001 | .0176271 | .0047062 | .3552273 | .0699764 |
+     |---------------------+---------------------+---------------------+----------------------------------------------------------------------------------------|
+     |      Bank_C~p       |      DomCre~p       |      BankBr~p       |      Bank_N~p       |      Mobile~p       |      Never~2P       |       Alway~2P       |
+     |      .1837621       |      .0757315       |      .2013672       |      .3236735       |      .0892874       |             .       |              .       |
+     +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+  3. | num_co~s | P2P_Re.. | P~Adj_~p | total_~m | retail~m | inst_a~m | RL_EST_~p | GDP_cu~p | Time_s~p | Cost_s~p | Tax_in~p | GC_Leg~p | GC_Cre~p | RI_recip |
+     |       50 |    28.04 | 7.663445 | 1896.227 | 1860.575 | 35.65214 |  .6185045 | 732.4933 | 12.11429 | 6.957143 | 25.35142 | 40.74074 | 84.25926 | 62.61111 |
+     |---------------------+---------------------+---------------------+----------------------------------------------------------------------------------------|
+     |      Bank_C~p       |      DomCre~p       |      BankBr~p       |      Bank_N~p       |      Mobile~p       |      Never~2P       |       Alway~2P       |
+     |         8.716       |      72.49061       |      20.24681       |      4.791391       |      126.4985       |             0       |              0       |
+     +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+  4. | num_co~s | P2P_Re.. | P~Adj_~p | total_~m | retail~m | inst_a~m | RL_EST_~p | GDP_cu~p | Time_s~p | Cost_s~p | Tax_in~p | GC_Leg~p | GC_Cre~p | RI_recip |
+     |        8 | 30.14583 | 7.974768 | 6876.345 | 3467.457 | 3408.888 |  1.344743 |  3200.92 |    3.924 |     .652 | 41.59785 |  75.6664 |     92.5 |  80.7572 |
+     |---------------------+---------------------+---------------------+----------------------------------------------------------------------------------------|
+     |      Bank_C~p       |      DomCre~p       |      BankBr~p       |      Bank_N~p       |      Mobile~p       |      Never~2P       |       Alway~2P       |
+     |      6.736453       |       107.916       |      31.04333       |      1.756117       |      108.8906       |             0       |              1       |
+     +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+     +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+  5. | num_co~s | P2P_Re.. | P~Adj_~p | total_~m | retail~m | inst_a~m | RL_EST_~p | GDP_cu~p | Time_s~p | Cost_s~p | Tax_in~p | GC_Leg~p | GC_Cre~p | RI_recip |
+     |      144 |        0 |        0 | 25.35272 | 20.56092 | 4.791796 | -.3359792 | 223.7109 | 25.87821 | 33.14374 | 23.04755 | 41.25034 | 51.58482 |  36.8822 |
+     |---------------------+---------------------+---------------------+----------------------------------------------------------------------------------------|
+     |      Bank_C~p       |      DomCre~p       |      BankBr~p       |      Bank_N~p       |      Mobile~p       |      Never~2P       |       Alway~2P       |
+     |      9.924804       |      46.80579       |       13.6875       |      7.465018       |      103.9492       |             1       |              0       |
+     +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+. 
+. cd "C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package"
+C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package
+
+. export excel using "Summary Statistics.xlsx", sheet("Table 4 anova", replace)  firstrow(varlabels) 
+file Summary Statistics.xlsx saved
+
+. 
+end of do-file
+
+. log close
+      name:  <unnamed>
+       log:  C:\Schools\RA works\Rau\Sometimes, Always, Never\Draft Paper\MS_replication_package\summary_statistics.log
+  log type:  text
+ closed on:  21 Nov 2024, 15:05:45
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
